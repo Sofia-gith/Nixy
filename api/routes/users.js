@@ -16,9 +16,8 @@ export const addUser = (req, res) => {
             req.body.,
             req.body.,
 
-        ]
-
-
+        ]  
+        
         db.query(q, [values], (err) => {
 
             if(err) return res.json(err);
@@ -29,10 +28,3 @@ export const addUser = (req, res) => {
         });
 
     }
-        
-
-
-
-
-
-}
