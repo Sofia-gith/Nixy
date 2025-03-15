@@ -9,12 +9,6 @@ body {
     
 }
 
-.poppins-medium {
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-style: normal;
-  }
-
 .cabecalho{
     width: 100%;
     height: 200px;
@@ -26,6 +20,8 @@ body {
 .chamada{
     text-align: center;
     margin-top: 5%;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .logo{
@@ -35,9 +31,10 @@ body {
 .logo2{
     
     font-family: "Inspiration", cursive;
+    font-weight: 400;
     font-style: normal;
     color: #81BBE7;
-    font-size: 120px;
+    font-size: 130px;
     
 }
 
@@ -79,14 +76,24 @@ label {
 
 input {
     border: none;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #6C6464;
     padding: 8px;
     font-size: 16px;
     outline: none;
     margin-bottom: 10%;
-    width: 100%;
+    width: 90%;
 }
 
 input:focus {
     border-bottom: 2px solid #007BFF;
+}
+
+.Enviar{
+    float: right;
+    background-color: #D6A4EF;
+    height: 52px;
+    width: 190px;
+    border-radius: 5%;
+    font-size: 20px;
+    margin-right: 10%;
 }
