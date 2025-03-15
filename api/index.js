@@ -17,11 +17,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.status(200).render('login', 
-        { 
-            title: 'sobre com Express',
-            message: 'Página sobre!' 
-        });
+    res.status(200).render('login');
+});
+
+app.get('/cadastro', (req, res) => {
+    res.status(200).render('cadastro');
+});
+
+app.get('/landingPage', (req, res) => {
+    res.status(200).render('landingPage');
 });
 
 app.listen(8800, () => {
