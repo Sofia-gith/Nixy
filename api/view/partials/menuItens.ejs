@@ -1,0 +1,14 @@
+<aside class="sidebar">
+    <div class="usuario">
+        <div class="usuario_avatar"></div>
+        <p><%= usuarioNome %></p>
+    </div>
+
+    <ul class="menuInicio">
+        <% menuItems.forEach(function(item) { %>
+            <li class="<%= item.active ? 'active' : '' %>">
+                <a href="<%= item.link %>"><%= item.nome %></a>
+            </li>
+        <% }); %>
+    </ul>
+</aside>
