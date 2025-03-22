@@ -40,20 +40,22 @@ app.get("/", (req, res) => {
   res.render("index", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
+
+
 app.get("/agenda", (req, res) => {
-  res.render("agenda", { usuarioNome: "usuario_nome" });
+  res.render("agenda", {  user: req.session.user,usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
 app.get("/estatisticas", (req, res) => {
-  res.render("estatisticas", { usuarioNome: "usuario_nome", mostrarMenu: true });
+  res.render("estatisticas", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
 app.get("/anotacoes", (req, res) => {
-  res.render("anotacoes", { usuarioNome: "usuario_nome", mostrarMenu: true });
+  res.render("anotacoes", {  user: req.session.user,usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
 app.get("/pomodoro", (req, res) => {
-  res.render("pomodoro", { usuarioNome: "usuario_nome", mostrarMenu: true });
+  res.render("pomodoro", {  user: req.session.user,usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
 app.get('/login', (req, res) => {

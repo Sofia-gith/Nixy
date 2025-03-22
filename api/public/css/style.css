@@ -17,7 +17,9 @@ body {
     background-color: #1C1746;
     display: flex; 
     align-items: left;
-    gap: 10px;
+    font-weight: 200;
+    font-style: normal;
+    
 }
 
 .LogoPrincipal{
@@ -41,15 +43,13 @@ body {
 
 .menu{
     display: flex;
-    margin-left: 20%;
+    margin-left: 5%;
     margin-top: 2%;
     list-style-type: none;
-    
-    
 }
 
 .menu li{
-    font-size: 25px;
+    font-size: 30px;
     
 }
 
@@ -65,7 +65,16 @@ body {
     border-radius: 5px;
 }
 
-/* Parte do inicio */
+/* header2 */
+
+.header2{
+    width: 100%;
+    height: 50px;
+    background-color: #C5DEF1;
+}
+
+
+/* menu itens */
 
 .sidebar {
     width: 250px;
@@ -76,13 +85,13 @@ body {
 
 .usuario{
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30%;
 }
 
 .usuario_avatar{
-    width: 70px;
-    height: 70px;
-    background: gray;
+    width: 90px;
+    height: 90px;
+    background: #D9D9D9;
     border-radius: 50%;
     margin: 0 auto;
 }
@@ -91,11 +100,14 @@ body {
 .menuInicio {
     list-style: none;
     padding: 0;
+    text-align: center;
+    
 }
 
 .menuInicio li {
     padding: 10px;
     margin-bottom: 5px;
+    font-size: 20px;
 }
 
 .menuInicio li a {
@@ -118,10 +130,63 @@ body {
     height: 100vh;
 }
 
-.aaaaaaaaaaa{
-    background-color: #AF70C5;
-    
+.conteudo{
+    background-color: #E1E2EA;
+    width: 100%;
 }
+
+
+/* a agenda feita aqui */
+
+.agendaCentraliza {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    width: 700px;
+    height: 500px;
+    margin: auto;
+    margin-top: 5%;
+    border: 2px solid #6C6464;
+}
+
+.btnCa {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.weekdays {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.day {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid gray;
+    cursor: pointer;
+}
+
+.day.selected {
+    background: #c490e4;
+}
+
+
 /* aqui a landing page */
 
 .meioLandingPage{
@@ -140,8 +205,8 @@ body {
 .mensagem h1{
     color: #81BBE7;
     margin-bottom: 10%;
-    font-size: 40px;
-    font-weight: 300;
+    font-size: 50px;
+    font-weight: 400;
     font-style: normal;
 }
 
@@ -153,25 +218,29 @@ body {
 
 .butao1 {
     background-color: #81BBE7;
-    border-radius: 15%;
+    border-radius: 10%;
     width: 30%;
-    height: 40px;
+    height: 55px;
     cursor: pointer;
+    bottom: bold;
+    font-size: 16px;
 }
 
 .butao2 {
     background-color: #81BBE7;
-    border-radius: 15%;
+    border-radius: 10%;
     width: 30%;
-    height: 40px;
+    height: 55px;
     margin-left: 5%;
-    margin-top: 5%;
+    margin-top: 8%;
     cursor: pointer;
+    font-size: 16px;
+    border: none;
  }
 .quadrados{
    
     float: right;
-    margin-right: 40%;
+    margin-right: 35%;
     margin-top: 5%;
 }
 
@@ -180,7 +249,6 @@ body {
     height: 200px;
     background-color: #AF70C5;
     clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
-   
     margin-bottom: 20px;
     border-radius: 5%;
 }
@@ -192,7 +260,7 @@ body {
     clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
     margin-bottom: 20px;
     border-radius: 5%;
-    margin-left: 150%;
+    margin-left: 110%;
     
 }
 
@@ -212,8 +280,10 @@ body {
 }
 
 .AlinharLandingPage h2{
-    font-size: 24px;
+    font-size: 30px;
     margin-bottom: 10px;
+    text-align: left;
+    
 }
 
 .comeceEstudar{
@@ -224,43 +294,47 @@ body {
 }
 
 .icon{
-    width: 120px; 
+    width: 200px; 
     margin-bottom: 15px;
 }
 
 .LPbtn{
     background-color: #D6A7E3;
     border: none;
-    padding: 10px 20px;
+    padding: 20px 90px;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 2%;
     margin-top: 10px;
+    font-size: 20px;
 }
 
 .Foruns{
-    flex: 1;
     text-align: center;
 }
 
 .Foruns h3{
-    font-size: 24px;
-    color: #80A9E3;
+    font-size: 40px;
+    font-weight: 400;
+    font-style: normal;
+    color: #81BBE7;
     margin-bottom: 20px;    
 }
 
 .Fgrid{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 10%;
     justify-items: center;
+    
 }
 
 .box {
-    width: 120px;
-    height: 100px;
-    background-color: #D6A7E3;
+    width: 250px;
+    height: 200px;
+    background-color: #E2C6F0;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 /* login */
@@ -482,10 +556,8 @@ form {
 
 footer{
     background-color: #1C1746;
-    height: 200px;
+    height: 500px;
     color: white;
-    padding: 20px 40px;
-    
     bottom: 0;
     width: 100%;
 }
@@ -497,12 +569,19 @@ footer{
 }
 
 .footer-section {
-    flex: 1;
+    flex: 20;
+    margin-top: 3%;
+    margin-left: 12%;
+    margin-bottom: 8%;
 }
 
 .footer-section h3 {
     font-size: 16px;
-    margin-bottom: 10px;
+    margin-bottom: 3%;
+}
+
+.direitosA{
+    margin-right: 17%;
 }
 
 .footer-section ul {
@@ -530,4 +609,12 @@ footer{
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
+}
+
+.logo-text{
+    font-family: "Inspiration", cursive;
+    font-weight: 400;
+    font-style: normal;
+    color: #81BBE7;
+    font-size: 70px;
 }

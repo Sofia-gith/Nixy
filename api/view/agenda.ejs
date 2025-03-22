@@ -1,11 +1,27 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
+<%- include('partials/header2') %>
 <div class="alinhaMenu">
     <%- include('partials/menuItens') %> 
 
 
-    <main>
+    <main class="conteudo">
     
-        <p class="aaaaaaaaaaa">agendaaa</p>
+        <div class="agendaCentraliza">
+            <button class="btnCa" id="prevMonth">&lt;</button>
+            <h2 id="monthYear">2025/3</h2>
+            <button class="btnCa" id="nextMonth">&gt;</button>
+        
+            <div class="calendario">
+                <div class="weekdays">
+                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                </div>
+                <div class="days">
+                    <% for (let i = 0; i < 35; i++) { %>
+                        <button class="day" data-day="<%= i %>"></button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
     </main>
 </div>
 
