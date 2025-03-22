@@ -30,12 +30,12 @@
             
             <p class="pCadastro"> Novo aqui? <a class="Acadastro" href="/login">criar nova conta</a></p>
 
-            <form>
+            <form id="loginForm" method="POST" action="/login">
                 <label class="CadastroRequisito" for="email">Email</label>
-                <input class="formCadastro" type="email" id="email"  required>
+                <input class="formCadastro" type="email" id="email" name="email" required>
 
                 <label class="CadastroRequisito" for="senha">Senha</label>
-                <input class="formCadastro" type="password" id="senha"  required>
+                <input class="formCadastro" type="password" id="senha" name="senha" required>
 
                 <div class="forgot-password">
                     <a class="Acadastro" href="#">Esqueceu a senha?</a>

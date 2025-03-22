@@ -1,14 +1,20 @@
 <aside class="sidebar">
     <div class="usuario">
         <div class="usuario_avatar"></div>
-        <p><%= usuarioNome %></p>
+        <% if (user) { %>
+            <p>Bem-vindo, <%= user.NOME_USUARIO_T01 %>!</p>
+            <% } else { %>
+                <p>Usuário não logado.</p>
+                <% } %>
     </div>
 
     <ul class="menuInicio">
         <% menuItems.forEach(function(item) { %>
             <li class="<%= item.active ? 'active' : '' %>">
-                <a href="<%= item.link %>"><%= item.nome %></a>
+                <a href="<%= item.link %>">
+                    <%= item.nome %>
+                </a>
             </li>
-        <% }); %>
+            <% }); %>
     </ul>
 </aside>

@@ -34,7 +34,7 @@
 
 
         <div class="formulario">
-            <form>
+            <form id="loginForm" method="POST" action="/createUser">
                 <label class="loginRequisito" for="nome">Nome completo</label>
                 <input class="login" type="text" id="nome" name="nome" required>
     
@@ -43,9 +43,10 @@
     
                 <label class="loginRequisito" for="senha">Senha</label>
                 <input class="login" type="password" id="senha" name="senha" required>
-                
+
+                <button type="submit" href="" class="Enviar">Enviar</button>
             </form>
-            <a href="/cadastro"><button type="submit" href="" class="Enviar">Enviar</button></a>
+
             <a href="/cadastro">Ja tem contra? entrar</a>
         </div>
     </div>
