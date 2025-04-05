@@ -3,12 +3,14 @@ import cors from "cors"
 import bodyParser from "body-parser";
 import session from "express-session";
 import routes from "./routes/routes.js";
+import { db } from './db.js';
 
 const app = express()
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(cors())
+app.use("/uploads", express.static("uploads")); 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -58,6 +60,30 @@ app.get("/anotacoes", (req, res) => {
 app.get("/pomodoro", (req, res) => {
   res.render("pomodoro", {  user: req.session.user,usuarioNome: "usuario_nome", mostrarMenu: true });
 });
+
+app.get('/usuario', async (req, res) => {
+  const usuarioLogado = req.session.user; // ou use cookie, jwt, etc
+
+  if (!usuarioLogado) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const [rows] = await db.query("SELECT * FROM USUARIO_T01 WHERE ID_USUARIO_T01 = ?", [usuarioLogado.ID_USUARIO_T01]);
+
+    if (rows.length === 0) {
+      return res.status(404).send("Usuário não encontrado");
+    }
+
+    const user = rows[0];
+
+    res.render("usuario", { user });
+  } catch (err) {
+    console.error("Erro ao carregar usuário:", err);
+    res.status(500).send("Erro ao carregar a página.");
+  }
+});
+
 
 app.get('/login', (req, res) => {
   res.render('login', {

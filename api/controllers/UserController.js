@@ -3,6 +3,46 @@ import { db } from "../db.js";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
+
+
+// upload.js
+import multer from "multer";
+import path from "path";
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // ex: 123456789.jpg
+  },
+});
+
+const upload = multer({ storage });
+
+export default upload;
+
+
+export const uploadFotoPerfil = async (req, res) => {
+    try {
+      const userId = req.params.id;
+      const imagem = req.file?.filename;
+  
+      if (!imagem) {
+        return res.status(400).send("Nenhuma imagem foi enviada.");
+      }
+  
+      // Atualizar o banco com o nome da imagem
+      await db.query("UPDATE usuarios SET foto_perfil = ? WHERE id = ?", [imagem, userId]);
+  
+      res.redirect("/usuario"); 
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erro ao enviar imagem.");
+    }
+  };
+
+
 //esqueci a senha
 
 

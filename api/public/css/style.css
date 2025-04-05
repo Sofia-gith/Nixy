@@ -73,6 +73,70 @@ body {
     background-color: #C5DEF1;
 }
 
+/* usuarios */
+
+.login-coluns-usuarios{
+
+    font-family: Arial, sans-serif;
+    background: #E6E7EB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.perfil-container {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    
+}
+
+.foto-perfil {
+    position: relative;
+    display: inline-block;
+    width: 120px; /* Ajuste conforme necessário */
+    height: 120px;
+    background-color: #D9D9D9;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+
+.btn-camera {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: white;
+    border: none;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.opcoes {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    font-size: 30px;
+}
+
+.opcoes li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.opcoes li:last-child {
+    border-bottom: none;
+}
+
+.opcoes a {
+    text-decoration: none;
+    color: black;
+
+}
+
 
 /* menu itens */
 
