@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nixy</title>
+    <title>Nixy </title>
     <link rel="stylesheet" href="/css/style.css">
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,38 +15,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <main class="centralizar">
 
-        <div class="imgE">
-            <img src="/imagens/pe.png" alt="" class="imgEsquerda">
+    <div class="login-coluns2">
+        <div class="logo">
+            <a href="\landingPage"><img src="/imagens/logo.png" alt=""></a>
+        </div>
+        <div><a href="\landingPage"><h2 class="logo2">nixy</h2></div></a>
+    </div>
+    
+
+    <div class="login-coluns">
+         
+        <div class="chamada">
+           
+            <h1>Junte-se a nós <br> Cadastre-se</h1>
+            <img src="/imagens/computadorHomem.png" alt="">
         </div>
 
-        <div class="login-box">
 
-            <div class="alinharLogo">
-                <a href="\landingPage"><img src="/imagens/logo.png" alt="Logo Nixy" class="logoCadastro"></a>
-              <a href="\landingPage">  <h2 class="logo3">nixy</h2></a>
-            </div>
-            <h1 class="h1Cadastro">Bem vindo de volta <br> ao <span class="highlight">Nixy</span></h1>
-            
-            <p class="pCadastro"> Novo aqui? <a class="Acadastro" href="/login">criar nova conta</a></p>
+        <div class="formulario">
 
-            <form id="loginForm" method="POST" action="/login">
-                <label class="CadastroRequisito" for="email">Email</label>
-                <input class="formCadastro" type="email" id="email" name="email" required>
+            <% if (typeof error !== 'undefined' && error) { %>
+                <p style="color: red;"><%= error %></p>
+              <% } %>
 
-                <label class="CadastroRequisito" for="senha">Senha</label>
-                <input class="formCadastro" type="password" id="senha" name="senha" required>
 
-                <div class="forgot-password">
-                    <a class="Acadastro" href="#">Esqueceu a senha?</a>
-                </div>
+            <form id="loginForm" method="POST" action="/createUser">
+                <label class="loginRequisito" for="nome">Nome completo</label>
+                <input class="login" type="text" id="nome" value="<%= nome || '' %>" name="nome" required>
+    
+                <label class="loginRequisito" for="email">Email</label>
+                <input class="login" type="email" id="email" value="<%= email || '' %>" name="email" required>
+    
+                <label class="loginRequisito" for="senha">Senha</label>
+                <input class="login" type="password" id="senha" name="senha" required>
 
-                <button type="submit" class="login-btn">Login</button>
+                <label  class="loginRequisito" for="senha">Confirmar Senha</label>
+                <input class="login" type="password" id="confirmSenha" name="confirmSenha" required>
+
+                <button type="submit" href="" class="Enviar">Enviar</button>
             </form>
-        </div>
 
-        <img src="/imagens/sentado.png" alt="" class="imgDireita">
-    </main>
+            <script>
+                document.querySelector("form").addEventListener("submit", function(event) {
+                    const senha = document.getElementById("senha").value;
+                    const confirmSenha = document.getElementById("confirmSenha").value;
+            
+                    if (senha !== confirmSenha) {
+                        event.preventDefault(); // Impede o envio do formulário
+                        alert("As senhas não coincidem!");
+                    }else if(senha.length < 8){
+                        event.preventDefault();
+                        alert("A senha precisa ter no minimo 8 caracteres!");
+                    }
+                });
+            </script>
+
+            <a href="/login">Ja tem contra? entrar</a>
+        </div>
+    </div>
+
+
+    
 </body>
 </html>

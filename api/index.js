@@ -6,6 +6,7 @@ import routes from "./routes/routes.js";
 
 const app = express()
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(cors())
 
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(routes); 
+
 
 app.get("/", (req, res) => {
   res.render("index", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
@@ -59,7 +60,30 @@ app.get("/pomodoro", (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.status(200).render('login', { mostrarMenu: false });
+  res.render('login', {
+    mostrarMenu: false,
+    error: null,
+    email: "",
+    nome: "" 
+  });
+});
+
+app.get('/esqueciAsenha', (req, res) => {
+  res.render('esqueciAsenha', {
+    mostrarMenu: false,
+    error: null,
+    email: "",
+    nome: "" 
+  });
+});
+
+app.get('/cadastro', (req, res) => {
+  res.status(200).render('cadastro', { 
+    mostrarMenu: false,
+    nome: '',
+    email: '',
+    error: null
+  });
 });
 
 app.get('/logout', (req, res) => {
@@ -74,6 +98,9 @@ app.get('/cadastro', (req, res) => {
 app.get('/landingPage', (req, res) => {
   res.status(200).render('landingPage', { mostrarMenu: false });
 });
+
+
+app.use(routes); 
 
 app.listen(8080, () => {
   console.log("rodando na porta 8080")

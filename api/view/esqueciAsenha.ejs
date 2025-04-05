@@ -16,9 +16,7 @@
 <body>
     <main class="centralizar">
 
-        <div class="imgE">
-            <img src="/imagens/pe.png" alt="" class="imgEsquerda">
-        </div>
+      
 
         <div class="login-box">
 
@@ -26,26 +24,27 @@
                 <a href="\landingPage"><img src="/imagens/logo.png" alt="Logo Nixy" class="logoCadastro"></a>
               <a href="\landingPage">  <h2 class="logo3">nixy</h2></a>
             </div>
-            <h1 class="h1Cadastro">Bem vindo de volta <br> ao <span class="highlight">Nixy</span></h1>
+            <br>
+            <p class="pCadastro">Voltar para o <a class="Acadastro" href="/cadastro">Cadastro</a></p>
+            <p class="pCadastro">Voltar para o <a class="Acadastro" href="/login">Login</a></p>
+            <br>
+            <h1 class="h1Cadastro">recuperando a senha</span></h1>
             
-            <p class="pCadastro"> Novo aqui? <a class="Acadastro" href="/cadastro">criar nova conta</a></p>
+            
 
-            <form id="loginForm" method="POST" action="/login">
-                <label class="CadastroRequisito" for="email">Email</label>
+            <form id="loginForm" method="POST" action="/esqueci-senha">
+                <label class="CadastroRequisito" for="email">Insira Email de recuperação</label>
                 <input class="formCadastro" type="email" id="email" name="email" required>
-
-                <label class="CadastroRequisito" for="senha">Senha</label>
-                <input class="formCadastro" type="password" id="senha" name="senha" required>
-
-                <div class="forgot-password">
-                    <a class="Acadastro" href="/esqueciAsenha">Esqueceu a senha?</a>
-                </div>
-
-                <button type="submit" class="login-btn">Login</button>
+                <button type="submit" class="login-btn">Enviar</button>
             </form>
+
         </div>
 
-        <img src="/imagens/sentado.png" alt="" class="imgDireita">
+        <% if (typeof mensagem !== 'undefined') { %>
+            <p><%= mensagem %></p>
+        <% } %>
+
+        
     </main>
 </body>
 </html>
