@@ -6,7 +6,63 @@
 
     <main class="conteudo">
     
-        <p class="aaaaaaaaaaa">Pomodoro</p>
+        <h1 class="pomoH">• Pomodoro</h1>
+        <div id="timer">30:00</div>
+      
+        <div class="cycles">
+          <div class="cycle-dot"></div>
+          <div class="cycle-dot"></div>
+          <div class="cycle-dot"></div>
+          <div class="cycle-dot"></div>
+        </div>
+      
+        <div class="logo">Nixy</div>
+      
+        <div class="buttons">
+          <button onclick="startTimer()">▶</button>
+          <button onclick="pauseTimer()">⏸</button>
+          <button onclick="resetTimer()">🔄</button>
+        </div>
+      
+        <script>
+          let timerDisplay = document.getElementById("timer");
+          let totalSeconds = 30 * 60; // 30 minutos
+          let secondsLeft = totalSeconds;
+          let interval = null;
+      
+          function updateDisplay() {
+            let minutes = Math.floor(secondsLeft / 60);
+            let seconds = secondsLeft % 60;
+            timerDisplay.textContent =
+              String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+          }
+      
+          function startTimer() {
+            if (interval) return;
+            interval = setInterval(() => {
+              if (secondsLeft > 0) {
+                secondsLeft--;
+                updateDisplay();
+              } else {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          }
+      
+          function pauseTimer() {
+            clearInterval(interval);
+            interval = null;
+          }
+      
+          function resetTimer() {
+            pauseTimer();
+            secondsLeft = totalSeconds;
+            updateDisplay();
+          }
+      
+          updateDisplay(); // Inicializa display
+        </script>
     </main>
 </div>
 

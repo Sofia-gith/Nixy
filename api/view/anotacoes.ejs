@@ -7,7 +7,42 @@
 
     <main class="conteudo">
     
-        <p class="aaaaaaaaaaa">minhas coisinhas anotaciones</p>
+        <div class="notas-container" id="notasContainer">
+            
+            <div class="nota">
+              <h3>Título da anotação</h3>
+              <p>conteúdo das anotações<br>de forma ilustrativa.</p>
+            </div>
+        
+            <div class="nota">
+              <h3>Título de uma lista</h3>
+              <ul>
+                <li>Item 1</li>
+                <li>Item2</li>
+                <li>Item3</li>
+                <li>Item4</li>
+              </ul>
+            </div>
+          </div>
+        
+          <!-- Botão flutuante de adicionar -->
+          <button class="botao-add" onclick="adicionarNota()">+</button>
+        
+          <script>
+            function adicionarNota() {
+              const container = document.getElementById("notasContainer");
+        
+              const novaNota = document.createElement("div");
+              novaNota.className = "nota";
+              novaNota.innerHTML = `
+                <h3>Novo título</h3>
+                <p>Texto da nova anotação...</p>
+              `;
+        
+              container.appendChild(novaNota);
+            }
+          </script>
+        
     </main>
 </div>
 
