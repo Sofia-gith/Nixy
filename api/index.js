@@ -44,12 +44,77 @@ app.get("/", (req, res) => {
 });
 
 app.get("/agenda", (req, res) => {
-  res.render("agenda", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
-});
+  const now = new Date();
+  const { month, year } = req.query;
+
+  const currentMonth = month ? parseInt(month) : now.getMonth();
+  const currentYear = year ? parseInt(year) : now.getFullYear();
+
+  // Lógica do calendário...
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const days = [];
+  for (let i = 0; i < firstDay; i++) days.push(null);
+  for (let d = 1; d <= lastDate; d++) days.push(d);
+
+  const isToday = (d) => {
+    return (
+      d === now.getDate() &&
+      currentMonth === now.getMonth() &&
+      currentYear === now.getFullYear()
+    );
+  };
+
+  const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+  const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+
+  res.render("agenda", {
+    user: req.session.user,
+    usuarioNome: "usuario_nome",
+    mostrarMenu: true,
+    month: currentMonth,
+    year: currentYear,
+    days,
+    isToday,
+    monthName: new Date(currentYear, currentMonth).toLocaleString("pt-BR", { month: "long" }),
+    prevMonth,
+    prevYear,
+    nextMonth,
+    nextYear
+  });
 
 app.get("/estatisticas", (req, res) => {
-  res.render("estatisticas", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
-});
+    // Simule dados, ou busque do banco
+    const dados = {
+      diasSeguidos: 10,
+      horasEstudadas: 20,
+      posts: 0,
+      progressoHoras: 65,
+      graficoBarras: [3, 1, 5],
+      graficoBarras2: [2, 1, 4, 0.5, 3],
+      calendario: gerarDiasDoMes(2025, 2), // Março = mês 2
+    };
+  
+    res.render('estatisticas', {
+      user: req.session.user,
+      mostrarMenu: true,
+      ...dados
+    });
+  });
+  
+  function gerarDiasDoMes(ano, mes) {
+    const dias = [];
+    const totalDias = new Date(ano, mes + 1, 0).getDate();
+    for (let i = 1; i <= totalDias; i++) {
+      dias.push(i);
+    }
+    return dias;
+  }
+  
 
 app.get("/anotacoes", (req, res) => {
   res.render("anotacoes", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
@@ -125,4 +190,4 @@ app.use('/api/postagen', postagemRoutes);
 
 app.listen(8080, () => {
   console.log("Rodando na porta 8080");
-});
+})
