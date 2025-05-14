@@ -1,52 +1,84 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
-<%- include('partials/header2') %>
+  <%- include('partials/header2') %>
 
-<div class="alinhaMenu">
-    <%- include('partials/menuItens') %> 
+    <div class="alinhaMenu">
+      <%- include('partials/menuItens', { menuItems: menuItems }) %>
 
 
-    <main class="conteudo">
-    
-        <div class="notas-container" id="notasContainer">
-            
-            <div class="nota">
-              <h3>Título da anotação</h3>
-              <p>conteúdo das anotações<br>de forma ilustrativa.</p>
-            </div>
-        
-            <div class="nota">
-              <h3>Título de uma lista</h3>
-              <ul>
-                <li>Item 1</li>
-                <li>Item2</li>
-                <li>Item3</li>
-                <li>Item4</li>
-              </ul>
-            </div>
+        <main class="conteudo">
+          <div class="notas-container" id="notasContainer">
+            <% if (anotacoes && anotacoes.length> 0) { %>
+              <% anotacoes.forEach(nota=> { %>
+                <div class="nota">
+
+
+                  <h3>
+                    <%= nota.TITULO_ANOTACAO_T01 %>
+                  </h3>
+                  <p>
+                    <%= nota.TEXTO %>
+                  </p>
+                  <small>
+                    <%= new Date(nota.DATA_CRIACAO).toLocaleString("pt-BR") %>
+                  </small>
+                  <div class="nota-actions">
+                    <button class="edit-btn"
+                      onclick='editarNota(<%- JSON.stringify(nota.ID_ANOTACAO_T01) %>, <%- JSON.stringify(nota.TITULO_ANOTACAO_T01) %>, <%- JSON.stringify(nota.TEXTO) %>)'>
+                      <img src="/imagens/lapis.PNG" alt="">
+                     </button> 
+                    <form action="/anotacoes/excluir/<%= nota.ID_ANOTACAO_T01 %>" method="POST"
+                      onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                      <button type="submit">
+                        <img src="/imagens/lixo.PNG" alt="">
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+
+                <% }) %>
+                  <% } else { %>
+                    <p>Você ainda não escreveu nenhuma anotação.</p>
+                    <% } %>
+
           </div>
-        
-          <!-- Botão flutuante de adicionar -->
-          <button class="botao-add" onclick="adicionarNota()">+</button>
-        
+
+          <!-- Botão flutuante -->
+          <button class="botao-add" onclick="mostrarFormulario()">+</button>
+
+          <!-- Formulário oculto -->
+          <div id="formNota" class="form-anotacao" style="display: none;">
+            <form id="formAnotacao" action="/anotacoes/nova" method="POST">
+              <input type="hidden" name="id" id="notaId">
+              <input type="text" name="titulo" id="tituloNota" placeholder="Título" required>
+              <textarea name="conteudo" id="conteudoNota" placeholder="Digite sua anotação..." rows="6"
+                required></textarea>
+              <button type="submit">Salvar</button>
+            </form>
+          </div>
+
           <script>
-            function adicionarNota() {
-              const container = document.getElementById("notasContainer");
-        
-              const novaNota = document.createElement("div");
-              novaNota.className = "nota";
-              novaNota.innerHTML = `
-                <h3>Novo título</h3>
-                <p>Texto da nova anotação...</p>
-              `;
-        
-              container.appendChild(novaNota);
+            function mostrarFormulario() {
+              document.getElementById("formNota").style.display = "block";
+              document.getElementById("notaId").value = "";
+              document.getElementById("tituloNota").value = "";
+              document.getElementById("conteudoNota").value = "";
+              document.getElementById("formAnotacao").action = "/anotacoes/nova";
+            }
+
+            function editarNota(id, titulo, conteudo) {
+              document.getElementById("formNota").style.display = "block";
+              document.getElementById("notaId").value = id;
+              document.getElementById("tituloNota").value = titulo;
+              document.getElementById("conteudoNota").value = conteudo;
+              document.getElementById("formAnotacao").action = "/anotacoes/editar";
             }
           </script>
-        
-    </main>
-</div>
+        </main>
+    </div>
 
 
 
-</body>
-</html>
+    </body>
+
+    </html>

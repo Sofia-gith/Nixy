@@ -1,70 +1,101 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
-<%- include('partials/header2') %>
-<div class="alinhaMenu">
-    <%- include('partials/menuItens') %> 
+  <%- include('partials/header2') %>
+    <div class="alinhaMenu">
+      <%- include('partials/menuItens') %>
 
 
-    <main class="conteudo">
-    
-        <h1 class="pomoH">• Pomodoro</h1>
-        <div id="timer">30:00</div>
-      
-        <div class="cycles">
-          <div class="cycle-dot"></div>
-          <div class="cycle-dot"></div>
-          <div class="cycle-dot"></div>
-          <div class="cycle-dot"></div>
-        </div>
-      
-        <div class="logo">Nixy</div>
-      
-        <div class="buttons">
-          <button onclick="startTimer()">▶</button>
-          <button onclick="pauseTimer()">⏸</button>
-          <button onclick="resetTimer()">🔄</button>
-        </div>
-      
-        <script>
-          let timerDisplay = document.getElementById("timer");
-          let totalSeconds = 30 * 60; // 30 minutos
-          let secondsLeft = totalSeconds;
-          let interval = null;
-      
-          function updateDisplay() {
-            let minutes = Math.floor(secondsLeft / 60);
-            let seconds = secondsLeft % 60;
-            timerDisplay.textContent =
-              String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
-          }
-      
-          function startTimer() {
-            if (interval) return;
-            interval = setInterval(() => {
-              if (secondsLeft > 0) {
-                secondsLeft--;
-                updateDisplay();
-              } else {
-                clearInterval(interval);
-                interval = null;
-              }
-            }, 1000);
-          }
-      
-          function pauseTimer() {
-            clearInterval(interval);
-            interval = null;
-          }
-      
-          function resetTimer() {
-            pauseTimer();
-            secondsLeft = totalSeconds;
+        <main class="conteudo">
+          <div class="pomodoro-container">
+            <h1 class="pomoH">• Pomodoro</h1>
+            <div id="timer">30:00</div>
+
+            <div class="cycles">
+              <div class="cycle-dot"></div>
+              <div class="cycle-dot"></div>
+              <div class="cycle-dot"></div>
+              <div class="cycle-dot"></div>
+            </div>
+
+            <div class="logoPomo">Nixy</div>
+
+            <div class="buttonsPomo">
+              <button id="startBtn" onclick="startTimer()">▶</button>
+              <button id="pauseBtn" onclick="pauseTimer()" style="display: none;">⏸</button>
+              <button id="resetBtn" onclick="resetTimer()" style="display: none;">🔄</button>
+            </div>
+          </div>
+
+
+
+          <script>
+            let timerDisplay = document.getElementById("timer");
+            let totalSeconds = 30 * 60;
+            let secondsLeft = totalSeconds;
+            let interval = null;
+
+            const startBtn = document.getElementById("startBtn");
+            const pauseBtn = document.getElementById("pauseBtn");
+            const resetBtn = document.getElementById("resetBtn");
+
+            function updateDisplay() {
+              let minutes = Math.floor(secondsLeft / 60);
+              let seconds = secondsLeft % 60;
+              timerDisplay.textContent =
+                String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+            }
+
+            function startTimer() {
+              if (interval) return;
+
+              // Alterna visibilidade
+              startBtn.style.display = "none";
+              pauseBtn.style.display = "inline-block";
+              resetBtn.style.display = "inline-block";
+
+              interval = setInterval(() => {
+                if (secondsLeft > 0) {
+                  secondsLeft--;
+                  updateDisplay();
+                } else {
+                  clearInterval(interval);
+                  interval = null;
+                  // Opcional: restaurar botões após término
+                  startBtn.style.display = "inline-block";
+                  pauseBtn.style.display = "none";
+                  resetBtn.style.display = "none";
+                  startBtn.textContent = "▶"; // volta ao texto original
+                }
+              }, 1000);
+            }
+
+            function pauseTimer() {
+              clearInterval(interval);
+              interval = null;
+
+              // Mostra botão de retomar
+              startBtn.style.display = "inline-block";
+              startBtn.textContent = "▶"; // ou "Retomar"
+              pauseBtn.style.display = "none";
+              // resetBtn continua visível
+            }
+
+            function resetTimer() {
+              pauseTimer();
+              secondsLeft = totalSeconds;
+              updateDisplay();
+
+              // Volta ao estado inicial
+              startBtn.textContent = "▶";
+              startBtn.style.display = "inline-block";
+              pauseBtn.style.display = "none";
+              resetBtn.style.display = "none";
+            }
+
             updateDisplay();
-          }
-      
-          updateDisplay(); // Inicializa display
-        </script>
-    </main>
-</div>
+          </script>
+        </main>
+    </div>
 
-</body>
-</html>
+    </body>
+
+    </html>

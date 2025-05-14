@@ -29,5 +29,7 @@ routes.get("/esqueci-senha", (req, res) => {
 
 routes.post('/resetarSenha/:token', redefinirSenha);
 
+
+
   
 export default routes;

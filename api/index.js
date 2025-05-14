@@ -5,27 +5,12 @@ import session from "express-session";
 import routes from "./routes/routes.js";
 import { db } from './db.js';
 import postagemRoutes from './routes/postagen.js'; 
+import anotacaoRoutes from './routes/anotacao.js';
+import { ensureAuthenticated } from './middlewares/auth.js';
+import bcrypt from 'bcrypt';
 
 const app = express();
 
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
-app.use("/uploads", express.static("uploads"));
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(session({
-  secret: 'seu_segredo_aqui',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
-
-app.set('view engine', 'ejs');
-app.set('views', './view');
-app.use(express.static("public"));
 
 const menuItems = [
   { nome: "Agenda", link: "/agenda" },
@@ -39,8 +24,65 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(session({
+  secret: 'seu_segredo_aqui',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(cors());
+app.use("/uploads", express.static("uploads"));
+app.use('/anotacoes', anotacaoRoutes);
+
+app.set('view engine', 'ejs');
+app.set('views', './view');
+
+
+
+
+app.use((req, res, next) => {
+  res.locals.menuItems = menuItems;
+  next();
+});
+
+app.get('/usuario', async (req, res) => {
+  const usuarioLogado = req.session.user;
+
+  if (!usuarioLogado) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const [rows] = await db.query("SELECT * FROM usuario_t01 WHERE ID_USUARIO_T01 = ?", [usuarioLogado.ID_USUARIO_T01]);
+
+    if (rows.length === 0) {
+      return res.status(404).send("Usuário não encontrado");
+    }
+
+    const user = rows[0];
+
+    res.render("usuario", { user });
+  } catch (err) {
+    console.error("Erro ao carregar usuário:", err);
+    res.status(500).send("Erro ao carregar a página.");
+  }
+});
+
 app.get("/", (req, res) => {
-  res.render("index", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  res.render("index", {
+    user: req.session.user,
+    usuarioNome: req.session.user.NOME_USUARIO_T01 || "Usuário",
+    mostrarMenu: true
+  });
 });
 
 app.get("/agenda", (req, res) => {
@@ -50,7 +92,6 @@ app.get("/agenda", (req, res) => {
   const currentMonth = month ? parseInt(month) : now.getMonth();
   const currentYear = year ? parseInt(year) : now.getFullYear();
 
-  // Lógica do calendário...
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
@@ -86,6 +127,7 @@ app.get("/agenda", (req, res) => {
     nextMonth,
     nextYear
   });
+});
 
 app.get("/estatisticas", (req, res) => {
     // Simule dados, ou busque do banco
@@ -114,47 +156,57 @@ app.get("/estatisticas", (req, res) => {
     }
     return dias;
   }
-  
-
-app.get("/anotacoes", (req, res) => {
-  res.render("anotacoes", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
-});
 
 app.get("/pomodoro", (req, res) => {
   res.render("pomodoro", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
-app.get('/usuario', async (req, res) => {
-  const usuarioLogado = req.session.user;
 
-  if (!usuarioLogado) {
-    return res.redirect("/login");
-  }
+
+app.get('/login', (req, res) => {
+  res.render('login', { mostrarMenu: false, error: null, email: '' });
+});
+
+app.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
 
   try {
-    const [rows] = await db.query("SELECT * FROM USUARIO_T01 WHERE ID_USUARIO_T01 = ?", [usuarioLogado.ID_USUARIO_T01]);
+    const [rows] = await db.query('SELECT * FROM USUARIO_T01 WHERE EMAIL_USUARIO_T01 = ?', [email]);
 
     if (rows.length === 0) {
-      return res.status(404).send("Usuário não encontrado");
+      return res.render('login', {
+        mostrarMenu: false,
+        error: "Email ou senha inválidos",
+        email,
+        nome: ""
+      });
     }
 
     const user = rows[0];
+    const senhaCorreta = await bcrypt.compare(senha, user.SENHA_USUARIO_T01);
 
-    res.render("usuario", { user });
+    if (!senhaCorreta) {
+      return res.render('login', {
+        mostrarMenu: false,
+        error: "Email ou senha inválidos",
+        email,
+        nome: ""
+      });
+    }
+
+    req.session.user = user;
+    res.redirect('/');
   } catch (err) {
-    console.error("Erro ao carregar usuário:", err);
-    res.status(500).send("Erro ao carregar a página.");
+    console.error("Erro no login:", err);
+    res.status(500).render("login", {
+      mostrarMenu: false,
+      error: "Erro interno ao tentar fazer login",
+      email,
+      nome: ""
+    });
   }
 });
 
-app.get('/login', (req, res) => {
-  res.render('login', {
-    mostrarMenu: false,
-    error: null,
-    email: "",
-    nome: "" 
-  });
-});
 
 app.get('/esqueciAsenha', (req, res) => {
   res.render('esqueciAsenha', {
@@ -184,6 +236,8 @@ app.get('/landingPage', (req, res) => {
 });
 
 app.use(routes);
+
+
 
 // Adicionando as rotas de postagem
 app.use('/api/postagen', postagemRoutes); 
