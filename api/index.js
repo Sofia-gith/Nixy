@@ -4,10 +4,12 @@ import bodyParser from "body-parser";
 import session from "express-session";
 import routes from "./routes/routes.js";
 import { db } from './db.js';
-import postagemRoutes from './routes/postagen.js'; 
+import postagemRoutes from './routes/postagen.js';
 import anotacaoRoutes from './routes/anotacao.js';
 import { ensureAuthenticated } from './middlewares/auth.js';
 import bcrypt from 'bcrypt';
+import pomodoroRoutes from './routes/pomodoro.js';
+
 
 const app = express();
 
@@ -41,7 +43,7 @@ app.use('/anotacoes', anotacaoRoutes);
 
 app.set('view engine', 'ejs');
 app.set('views', './view');
-
+app.use('/pomodoro', pomodoroRoutes);
 
 
 
@@ -129,33 +131,46 @@ app.get("/agenda", (req, res) => {
   });
 });
 
-app.get("/estatisticas", (req, res) => {
-    // Simule dados, ou busque do banco
-    const dados = {
+app.get("/estatisticas", async (req, res) => {
+  const user = req.session.user;
+  if (!user) return res.redirect("/login");
+
+  try {
+    const [[{ totalSegundos }]] = await db.query(
+      `SELECT COALESCE(SUM(SEGUNDOS_GASTOS), 0) AS totalSegundos
+       FROM pomodoro_t01
+       WHERE ID_USUARIO_T01 = ?`,
+      [user.ID_USUARIO_T01]
+    );
+
+    const progressoHoras = (totalSegundos / 3600).toFixed(1); // em horas, com 1 casa decimal
+
+    res.render('estatisticas', {
+      user,
+      mostrarMenu: true,
       diasSeguidos: 10,
-      horasEstudadas: 20,
+      horasEstudadas: progressoHoras,
       posts: 0,
-      progressoHoras: 65,
+      progressoHoras,
       graficoBarras: [3, 1, 5],
       graficoBarras2: [2, 1, 4, 0.5, 3],
-      calendario: gerarDiasDoMes(2025, 2), // Março = mês 2
-    };
-  
-    res.render('estatisticas', {
-      user: req.session.user,
-      mostrarMenu: true,
-      ...dados
+      calendario: gerarDiasDoMes(2025, 2)
     });
-  });
-  
-  function gerarDiasDoMes(ano, mes) {
-    const dias = [];
-    const totalDias = new Date(ano, mes + 1, 0).getDate();
-    for (let i = 1; i <= totalDias; i++) {
-      dias.push(i);
-    }
-    return dias;
+  } catch (err) {
+    console.error("Erro ao carregar estatísticas:", err);
+    res.status(500).send("Erro ao carregar estatísticas.");
   }
+});
+
+
+function gerarDiasDoMes(ano, mes) {
+  const dias = [];
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+  for (let i = 1; i <= totalDias; i++) {
+    dias.push(i);
+  }
+  return dias;
+}
 
 app.get("/pomodoro", (req, res) => {
   res.render("pomodoro", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
@@ -213,12 +228,12 @@ app.get('/esqueciAsenha', (req, res) => {
     mostrarMenu: false,
     error: null,
     email: "",
-    nome: "" 
+    nome: ""
   });
 });
 
 app.get('/cadastro', (req, res) => {
-  res.status(200).render('cadastro', { 
+  res.status(200).render('cadastro', {
     mostrarMenu: false,
     nome: '',
     email: '',
@@ -240,7 +255,7 @@ app.use(routes);
 
 
 // Adicionando as rotas de postagem
-app.use('/api/postagen', postagemRoutes); 
+app.use('/api/postagen', postagemRoutes);
 
 app.listen(8080, () => {
   console.log("Rodando na porta 8080");
