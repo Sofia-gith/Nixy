@@ -511,10 +511,6 @@ body {
     border-radius: 50%;
   }
 
-.cycle-dot.completed {
-  background-color: #E0B1E0; 
-}
-
   .logoPomo {
     font-family: "Inspiration";
     font-size: 100px;
@@ -541,10 +537,6 @@ body {
 
   .buttonsPomo button:hover {
     background-color: #ddd;
-  }
-
-  .pular{
-    width: 30px;
   }
 
 /* aqui a landing page */

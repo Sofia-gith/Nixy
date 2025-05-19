@@ -9,29 +9,10 @@ import anotacaoRoutes from './routes/anotacao.js';
 import { ensureAuthenticated } from './middlewares/auth.js';
 import bcrypt from 'bcrypt';
 import pomodoroRoutes from './routes/pomodoro.js';
-import upload from './middlewares/upload.js';
 
 
 const app = express();
 
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
-app.use("/uploads", express.static("uploads"));
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(session({
-  secret: 'seu_segredo_aqui',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
-
-app.set('view engine', 'ejs');
-app.set('views', './view');
-app.use(express.static("public"));
 
 const menuItems = [
   { nome: "Agenda", link: "/agenda" },
@@ -79,10 +60,7 @@ app.get('/usuario', async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query(
-      "SELECT * FROM usuario_t01 WHERE ID_USUARIO_T01 = ?",
-      [usuarioLogado.ID_USUARIO_T01]
-    );
+    const [rows] = await db.query("SELECT * FROM usuario_t01 WHERE ID_USUARIO_T01 = ?", [usuarioLogado.ID_USUARIO_T01]);
 
     if (rows.length === 0) {
       return res.status(404).send("Usuário não encontrado");
@@ -90,7 +68,7 @@ app.get('/usuario', async (req, res) => {
 
     const user = rows[0];
 
-    res.render("usuario", {  usuario: user });
+    res.render("usuario", { user });
   } catch (err) {
     console.error("Erro ao carregar usuário:", err);
     res.status(500).send("Erro ao carregar a página.");
@@ -98,7 +76,15 @@ app.get('/usuario', async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("index", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  res.render("index", {
+    user: req.session.user,
+    usuarioNome: req.session.user.NOME_USUARIO_T01 || "Usuário",
+    mostrarMenu: true
+  });
 });
 
 app.get("/agenda", (req, res) => {
@@ -108,7 +94,6 @@ app.get("/agenda", (req, res) => {
   const currentMonth = month ? parseInt(month) : now.getMonth();
   const currentYear = year ? parseInt(year) : now.getFullYear();
 
-  // Lógica do calendário...
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
@@ -146,84 +131,94 @@ app.get("/agenda", (req, res) => {
   });
 });
 
-app.get("/estatisticas", (req, res) => {
-    // Simule dados, ou busque do banco
-    const dados = {
+app.get("/estatisticas", async (req, res) => {
+  const user = req.session.user;
+  if (!user) return res.redirect("/login");
+
+  try {
+    const [[{ totalSegundos }]] = await db.query(
+      `SELECT COALESCE(SUM(SEGUNDOS_GASTOS), 0) AS totalSegundos
+       FROM pomodoro_t01
+       WHERE ID_USUARIO_T01 = ?`,
+      [user.ID_USUARIO_T01]
+    );
+
+    const progressoHoras = (totalSegundos / 3600).toFixed(1); // em horas, com 1 casa decimal
+
+    res.render('estatisticas', {
+      user,
+      mostrarMenu: true,
       diasSeguidos: 10,
-      horasEstudadas: 20,
+      horasEstudadas: progressoHoras,
       posts: 0,
-      progressoHoras: 65,
+      progressoHoras,
       graficoBarras: [3, 1, 5],
       graficoBarras2: [2, 1, 4, 0.5, 3],
-      calendario: gerarDiasDoMes(2025, 2), // Março = mês 2
-    };
-  
-    res.render('estatisticas', {
-      user: req.session.user,
-      mostrarMenu: true,
-      ...dados
+      calendario: gerarDiasDoMes(2025, 2)
     });
-  });
-  
-  function gerarDiasDoMes(ano, mes) {
-    const dias = [];
-    const totalDias = new Date(ano, mes + 1, 0).getDate();
-    for (let i = 1; i <= totalDias; i++) {
-      dias.push(i);
-    }
-    return dias;
+  } catch (err) {
+    console.error("Erro ao carregar estatísticas:", err);
+    res.status(500).send("Erro ao carregar estatísticas.");
   }
-  
-
-app.get("/anotacoes", (req, res) => {
-  res.render("anotacoes", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
 });
+
+
+function gerarDiasDoMes(ano, mes) {
+  const dias = [];
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+  for (let i = 1; i <= totalDias; i++) {
+    dias.push(i);
+  }
+  return dias;
+}
 
 app.get("/pomodoro", (req, res) => {
   res.render("pomodoro", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
+
+
 app.get('/login', (req, res) => {
   res.render('login', { mostrarMenu: false, error: null, email: '' });
 });
 
-
-app.get('/usuario', async (req, res) => {
-  const usuarioLogado = req.session.user;
-
-  if (!usuarioLogado) {
-    return res.redirect("/login");
-  }
+app.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
 
   try {
-    const [rows] = await db.query("SELECT * FROM USUARIO_T01 WHERE ID_USUARIO_T01 = ?", [usuarioLogado.ID_USUARIO_T01]);
+    const [rows] = await db.query('SELECT * FROM USUARIO_T01 WHERE EMAIL_USUARIO_T01 = ?', [email]);
 
     if (rows.length === 0) {
-      return res.status(404).send("Usuário não encontrado");
+      return res.render('login', {
+        mostrarMenu: false,
+        error: "Email ou senha inválidos",
+        email,
+        nome: ""
+      });
     }
 
     const user = rows[0];
+    const senhaCorreta = await bcrypt.compare(senha, user.SENHA_USUARIO_T01);
 
-    res.render("usuario", { user });
+    if (!senhaCorreta) {
+      return res.render('login', {
+        mostrarMenu: false,
+        error: "Email ou senha inválidos",
+        email,
+        nome: ""
+      });
+    }
+
+    req.session.user = user;
+    res.redirect('/');
   } catch (err) {
-    console.error("Erro ao carregar usuário:", err);
-    res.status(500).send("Erro ao carregar a página.");
-  }
-});
-
-app.post('/upload-foto/:id', upload.single('foto'), async (req, res) => {
-  const { id } = req.params;
-  const imagemUrl = req.file.path;
-
-  try {
-    await db.query('UPDATE USUARIO_T01 SET FOTO_PERFIL_URL = ? WHERE ID_USUARIO_T01 = ?', [imagemUrl, id]);
-
-    req.session.user.FOTO_PERFIL_URL = imagemUrl;
-
-    res.redirect('/usuario');
-  } catch (err) {
-    console.error("Erro ao atualizar foto de perfil:", err);
-    res.status(500).send("Erro ao atualizar a foto.");
+    console.error("Erro no login:", err);
+    res.status(500).render("login", {
+      mostrarMenu: false,
+      error: "Erro interno ao tentar fazer login",
+      email,
+      nome: ""
+    });
   }
 });
 
@@ -233,12 +228,12 @@ app.get('/esqueciAsenha', (req, res) => {
     mostrarMenu: false,
     error: null,
     email: "",
-    nome: "" 
+    nome: ""
   });
 });
 
 app.get('/cadastro', (req, res) => {
-  res.status(200).render('cadastro', { 
+  res.status(200).render('cadastro', {
     mostrarMenu: false,
     nome: '',
     email: '',
@@ -272,9 +267,11 @@ app.get("/Forum", (req, res) => {
 
 app.use(routes);
 
+
+
 // Adicionando as rotas de postagem
-app.use('/api/postagen', postagemRoutes); 
+app.use('/api/postagen', postagemRoutes);
 
 app.listen(8080, () => {
   console.log("Rodando na porta 8080");
-});
+})
