@@ -49,7 +49,7 @@ router.get('/painel', async (req, res) => {
         const result = await db.query('SELECT tempo_estudo FROM usuarios WHERE id = $1', [userId]);
         const tempoEstudo = result.rows[0].tempo_estudo || 0;
 
-        res.render('painel', { tempoEstudo }); // Ex: 3600 segundos
+        res.render('painel', { tempoEstudo }); 
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro ao carregar tempo');

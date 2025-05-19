@@ -183,6 +183,11 @@ app.get("/pomodoro", (req, res) => {
   res.render("pomodoro", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
 });
 
+app.get('/login', (req, res) => {
+  res.render('login', { mostrarMenu: false, error: null, email: '' });
+});
+
+
 app.get('/usuario', async (req, res) => {
   const usuarioLogado = req.session.user;
 
