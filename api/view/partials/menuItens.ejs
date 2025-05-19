@@ -1,12 +1,14 @@
 <aside class="sidebar">
-    <div  class="usuario">
+    <div class="usuario">
         <a href="/usuario">
-        <div class="usuario_avatar"> </div>
+            <div class="usuario_avatar"
+                style="background-image: url('<%= user && user.FOTO_PERFIL_URL ? user.FOTO_PERFIL_URL : '/img/default.png' %>');">
+            </div>
             <% if (user) { %>
                 <p>Bem-vindo, <%= user.NOME_USUARIO_T01 %>!</p>
-            <% } else { %>
-                <p>Usuário não logado.</p>
-            <% } %>
+                <% } else { %>
+                    <p>Usuário não logado.</p>
+                    <% } %>
         </a>
     </div>
 

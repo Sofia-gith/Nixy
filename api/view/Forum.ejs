@@ -1,0 +1,48 @@
+<%- include('partials/header', { title: 'Página Inicial' }) %>
+
+
+    <div class="AlinhaForum">
+        <aside class="menuLateral">
+            <h3>Populares</h3>
+            <hr />
+            <ul>
+                <% comunidades.forEach(com=> { %>
+                    <li>
+                        <%= com %>
+                    </li>
+                    <% }) %>
+            </ul>
+        </aside>
+
+        <main class="PrincipalForum">
+            <div class="barraPesquisa">
+                <input type="text" placeholder="Busque palavra-chave/ forum/ etc" />
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <% posts.forEach(post=> { %>
+                <div class="post">
+                    <div class="forum-info">
+                        <div class="avatar"></div>
+                        <span>
+                            <%= post.forum %>
+                        </span>
+                    </div>
+                    <h2>
+                        <%= post.titulo %>
+                    </h2> 
+                    <br>
+                    <div class="ConteudoPost">
+                        <%= post.conteudo %>
+                    </div>
+                </div>
+                <% }) %>
+
+                    <button class="add-button">+</button>
+        </main>
+    </div>
+
+
+    </body>
+
+    </html>

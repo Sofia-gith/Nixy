@@ -1,22 +1,28 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
-app.use('/uploads', express.static('uploads'));
-<div class="login-coluns-usuarios">
-    <div class="perfil-container">
-        <div class="foto-perfil">
-            <form action="/upload-foto/<%= user.id %>" method="POST" enctype="multipart/form-data">
+    <div class="login-coluns-usuarios">
+
+
+        <div class="perfil-container">
+
+
+            <form action="/upload-foto/<%= usuario.ID_USUARIO_T01 %>" method="POST" enctype="multipart/form-data">
                 <div class="foto-perfil">
-                  <img src="/uploads/<%= user.foto_perfil %>" alt="Foto de Perfil" class="perfil-img">
-                  <input type="file" name="foto" id="foto" accept="image/*" required>
-                  <button type="submit" class="btn-camera">📷</button>
+                    <% if (usuario && usuario.FOTO_PERFIL_URL) { %>
+                        <img src="<%= usuario.FOTO_PERFIL_URL %>" alt="Imagem de perfil" />
+                        <% } else { %>
+                            <img src="/img/default.png" alt="Imagem padrão" />
+                            <% } %>
+                                <input type="file" name="foto" id="foto" accept="image/*" required>
+                                <button type="submit" class="btn-camera">📷</button>
                 </div>
-              </form>
-              
+            </form>
+
         </div>
-        
+
         <ul class="opcoes">
             <li><a href="/mudar-senha">Mudar senha</a></li>
             <li><a href="/mudar-email">Mudar Email</a></li>
             <li><a href="/acessibilidade">Acessibilidade/Contraste</a></li>
         </ul>
     </div>
-</div>
+    </div>

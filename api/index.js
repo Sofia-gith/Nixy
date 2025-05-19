@@ -9,6 +9,7 @@ import anotacaoRoutes from './routes/anotacao.js';
 import { ensureAuthenticated } from './middlewares/auth.js';
 import bcrypt from 'bcrypt';
 import pomodoroRoutes from './routes/pomodoro.js';
+import upload from './middlewares/upload.js';
 
 
 const app = express();
@@ -60,7 +61,10 @@ app.get('/usuario', async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query("SELECT * FROM usuario_t01 WHERE ID_USUARIO_T01 = ?", [usuarioLogado.ID_USUARIO_T01]);
+    const [rows] = await db.query(
+      "SELECT * FROM usuario_t01 WHERE ID_USUARIO_T01 = ?",
+      [usuarioLogado.ID_USUARIO_T01]
+    );
 
     if (rows.length === 0) {
       return res.status(404).send("Usuário não encontrado");
@@ -68,7 +72,7 @@ app.get('/usuario', async (req, res) => {
 
     const user = rows[0];
 
-    res.render("usuario", { user });
+    res.render("usuario", {  usuario: user });
   } catch (err) {
     console.error("Erro ao carregar usuário:", err);
     res.status(500).send("Erro ao carregar a página.");
@@ -222,6 +226,22 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/upload-foto/:id', upload.single('foto'), async (req, res) => {
+  const { id } = req.params;
+  const imagemUrl = req.file.path;
+
+  try {
+    await db.query('UPDATE USUARIO_T01 SET FOTO_PERFIL_URL = ? WHERE ID_USUARIO_T01 = ?', [imagemUrl, id]);
+
+    req.session.user.FOTO_PERFIL_URL = imagemUrl;
+
+    res.redirect('/usuario');
+  } catch (err) {
+    console.error("Erro ao atualizar foto de perfil:", err);
+    res.status(500).send("Erro ao atualizar a foto.");
+  }
+});
+
 
 app.get('/esqueciAsenha', (req, res) => {
   res.render('esqueciAsenha', {
@@ -249,6 +269,21 @@ app.get('/logout', (req, res) => {
 app.get('/landingPage', (req, res) => {
   res.status(200).render('landingPage', { mostrarMenu: false });
 });
+
+//forúm
+
+app.get("/Forum", (req, res) => {
+  res.render("Forum", { mostrarMenu: false, 
+    posts: [
+      {
+        forum: 'Estudos de Programação',
+        titulo: 'Como programar?',
+        conteudo: 'Você pode usar EJS para renderizar HTML dinâmico com JavaScript no servidor.'
+      }
+    ],
+    comunidades: ['comunidade 1', 'comunidade 2', 'comunidade 3', 'comunidade 4']
+  });
+}); 
 
 app.use(routes);
 
