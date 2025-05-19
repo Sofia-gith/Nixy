@@ -1,0 +1,178 @@
+<%- include('partials/header', { title: 'Pomodoro' }) %>
+<%- include('partials/header2') %>
+
+<div class="alinhaMenu">
+  <%- include('partials/menuItens') %>
+
+  <main class="conteudo">
+    <div class="pomodoro-container">
+      <h1 class="pomoH">• Pomodoro</h1>
+      <div id="timer">25:00</div>
+
+      <div class="cycles">
+        <div class="cycle-dot"></div>
+        <div class="cycle-dot"></div>
+        <div class="cycle-dot"></div>
+        <div class="cycle-dot"></div>
+      </div>
+
+      <div class="logoPomo">Nixy</div>
+
+      <div class="buttonsPomo">
+        <button id="startBtn" onclick="startTimer()">▶</button>
+        <button id="pauseBtn" onclick="pauseTimer()" style="display: none;">⏸</button>
+        <button id="resetBtn" style="display: none;"> <img class="pular" src="/imagens/pular.png" alt=""> </button>
+      </div>
+    </div>
+
+    <script>
+      const timerDisplay = document.getElementById("timer");
+      const startBtn = document.getElementById("startBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      let workDuration = 25 * 60; // 25 minutos
+      let breakDuration = 5 * 60; // 5 minutos
+      let secondsLeft = workDuration;
+      let interval = null;
+      let isBreak = false;
+      let cycleCount = 0;
+      const totalCycles = 4;
+
+      let tempoGastoNoCiclo = 0;
+
+      function updateDisplay() {
+        const minutes = Math.floor(secondsLeft / 60);
+        const seconds = secondsLeft % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function updateCycleDots() {
+        const dots = document.querySelectorAll(".cycle-dot");
+        dots.forEach((dot, index) => {
+          dot.classList.toggle("completed", index < cycleCount);
+        });
+      }
+
+      function startTimer() {
+        if (interval) return;
+
+        startBtn.style.display = "none";
+        pauseBtn.style.display = "inline-block";
+        resetBtn.style.display = "inline-block";
+
+        interval = setInterval(() => {
+          if (secondsLeft > 0) {
+            secondsLeft--;
+            if (!isBreak) tempoGastoNoCiclo++;
+            updateDisplay();
+          } else {
+            clearInterval(interval);
+            interval = null;
+
+            if (!isBreak) {
+              cycleCount++;
+              updateCycleDots();
+              registrarCiclo(cycleCount, tempoGastoNoCiclo);
+              tempoGastoNoCiclo = 0;
+
+              if (cycleCount < totalCycles) {
+                alert("Hora do descanso!");
+                startBreak();
+              } else {
+                alert("Todos os ciclos concluídos!");
+                resetAll();
+              }
+            } else {
+              alert("Descanso encerrado. Vamos voltar ao trabalho!");
+              startWork();
+            }
+          }
+        }, 1000);
+      }
+
+      function registrarCiclo(ciclo, segundos) {
+        fetch('/pomodoro/registrar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ cicloNumero: ciclo, segundosGastos: segundos })
+        })
+        .then(res => res.json())
+        .then(data => console.log("Ciclo registrado:", data.message))
+        .catch(err => console.error("Erro ao registrar ciclo:", err));
+      }
+
+      function pauseTimer() {
+        clearInterval(interval);
+        interval = null;
+        startBtn.style.display = "inline-block";
+        startBtn.textContent = "▶";
+        pauseBtn.style.display = "none";
+      }
+
+      function resetTimer(skip = false) {
+        pauseTimer();
+
+        if (!isBreak && tempoGastoNoCiclo > 0) {
+          cycleCount++;
+          registrarCiclo(cycleCount, tempoGastoNoCiclo);
+          tempoGastoNoCiclo = 0;
+        }
+
+        if (skip) {
+          if (!isBreak && cycleCount < totalCycles) {
+            startBreak();
+          } else {
+            startWork();
+          }
+        } else {
+          secondsLeft = isBreak ? breakDuration : workDuration;
+          updateDisplay();
+        }
+
+        updateCycleDots();
+        startBtn.style.display = "inline-block";
+        startBtn.textContent = "▶";
+        pauseBtn.style.display = "none";
+        resetBtn.style.display = "inline-block";
+      }
+
+      function startWork() {
+        isBreak = false;
+        secondsLeft = workDuration;
+        updateDisplay();
+        startTimer();
+      }
+
+      function startBreak() {
+        isBreak = true;
+        secondsLeft = breakDuration;
+        updateDisplay();
+        startTimer();
+      }
+
+      function resetAll() {
+        cycleCount = 0;
+        isBreak = false;
+        secondsLeft = workDuration;
+        tempoGastoNoCiclo = 0;
+        updateDisplay();
+        updateCycleDots();
+        startBtn.style.display = "inline-block";
+        pauseBtn.style.display = "none";
+        resetBtn.style.display = "none";
+      }
+
+      resetBtn.onclick = () => {
+        const skip = confirm("Deseja pular este ciclo?");
+        resetTimer(skip);
+      };
+
+      updateDisplay();
+    </script>
+  </main>
+</div>
+</body>
+</html>
