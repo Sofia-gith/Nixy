@@ -26,16 +26,27 @@ export const criarPostagem = (req, res) => {
 
 // Função para obter todas as postagens
 export const getTodasPostagens = (req, res) => {
-    const query = 'SELECT * FROM POST_T05';
+  const query = `
+    SELECT 
+      p.ID_POST_T05 as id,
+      p.TITULO_POST_T05 as titulo,
+      p.CONTEUDO_POST_T05 as conteudo,
+      p.CATEGORIA_POST_T05 as forum,
+      u.NOME_USUARIO_T01 as autor,
+      p.DATA_CRIACAO_POST_T05 as data
+    FROM POST_T05 p
+    JOIN USUARIO_T01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
+    ORDER BY p.DATA_CRIACAO_POST_T05 DESC
+  `;
 
-    db.query(query)
-        .then(result => {
-            res.status(200).json(result);
-        })
-        .catch(err => {
-            console.error('Erro ao buscar postagens:', err);
-            return res.status(500).json({ erro: 'Erro ao buscar postagens' });
-        });
+  db.query(query)
+    .then(result => {
+      res.status(200).json(result);
+    })
+    .catch(err => {
+      console.error('Erro ao buscar postagens:', err);
+      return res.status(500).json({ erro: 'Erro ao buscar postagens' });
+    });
 };
 
 // Função para obter uma postagem por ID

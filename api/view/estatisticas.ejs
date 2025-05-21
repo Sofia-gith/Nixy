@@ -11,14 +11,19 @@
           <div class="painel">
 
             <div class="box centraliza">
-              <div class="valor">10</div>
-              <div class="titulo">Dias Seguidos</div>
+              <div class="valor">
+                <%= diasEstudadosMesAtual %> 
+              </div>
+
+              <div class="titulo">Dias Estudados</div>
               <canvas id="graficoDias"></canvas>
             </div>
 
             <div class="box centraliza">
-              
-                <div class="valor"><%= horasEstudadas %></div>
+
+              <div class="valor" id="horasEstudadasValor">
+                <%= horasEstudadas %>
+              </div>
               <div class="titulo">Horas Estudadas</div>
               <canvas id="graficoCircular" width="120" height="120"></canvas>
             </div>
@@ -36,9 +41,10 @@
             new Chart(document.getElementById('graficoDias'), {
               type: 'bar',
               data: {
-                labels: ['jan', 'fev', 'mar'],
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+
                 datasets: [{
-                  data: [6, 2, 10],
+                  data:  <%= JSON.stringify(diasEstudados) %>,
                   backgroundColor: '#dda9f0'
                 }]
               },
@@ -52,9 +58,7 @@
                 }
               }
             });
-
             // Gráfico circular: Horas Estudadas (meta 100h, já estudou 65h)
-
             const progressoHoras = <%= progressoHoras %>;
             const metaHoras = 100;
             const restante = Math.max(0, metaHoras - progressoHoras);
@@ -78,8 +82,11 @@
               }
             });
 
-            // Atualizar também o número visível na <div class="valor">Horas Estudadas</div>
-            document.querySelector('.box.centraliza .valor:nth-child(1)').textContent = progressoHoras;
+            // Atualizar corretamente o valor de horas estudadas
+            document.getElementById("horasEstudadasValor").textContent = progressoHoras;
+        
+
+       
 
 
 

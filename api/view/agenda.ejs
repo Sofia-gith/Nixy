@@ -1,11 +1,10 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
     <%- include('partials/header2') %>
+
         <div class="alinhaMenu">
             <%- include('partials/menuItens') %>
 
-
                 <main class="conteudo">
-
                     <div class="agendaCentraliza">
                         <div class="header">
                             <a class="mudarE" href="/agenda?month=<%= prevMonth %>&year=<%= prevYear %>">&lt;</a>
@@ -21,40 +20,52 @@
                                 <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
                             </div>
                             <div class="days">
-                                <% days.forEach(day=> { %>
+                                <% days.forEach((day)=> { %>
                                     <% if (day===null) { %>
                                         <div></div>
-
                                         <% } else { %>
                                             <div class="day">
-                                                <div class="day-content <%= isToday(day) ? 'today' : '' %>"
+                                                <div class="day-content <%= isToday(day) ? 'today' : '' %> <%= diasEstudadosSet.has(day) ? 'estudado' : '' %>"
                                                     data-dia="<%= day %>">
                                                     <%= day %>
                                                 </div>
                                             </div>
                                             <% } %>
                                                 <% }) %>
-
                             </div>
                         </div>
                     </div>
                 </main>
         </div>
+
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 const dias = document.querySelectorAll(".day-content");
 
                 dias.forEach(dia => {
-                    dia.addEventListener("click", () => {
-                        // Remove o "selected" de todos
-                        dias.forEach(d => d.classList.remove("selected"));
+                    dia.addEventListener("click", async () => {
+                        const diaSelecionado = dia.getAttribute("data-dia");
+                        const data = new Date(<%= year %>, <%= month %>, diaSelecionado);
 
-                        // Adiciona "selected" no clicado
-                        dia.classList.add("selected");
+                        try {
+                            await fetch('/agenda/marcar-dia', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ data: data.toISOString().split('T')[0] })
+                            });
+
+                            dia.classList.add("estudado");
+                        } catch (err) {
+                            alert("Erro ao marcar dia estudado");
+                            console.error(err);
+                        }
                     });
                 });
             });
         </script>
+
         </body>
 
         </html>

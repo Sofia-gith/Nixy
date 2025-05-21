@@ -14,31 +14,121 @@
             </ul>
         </aside>
 
+
+        <div id="formPostagem" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="fecharFormulario()">&times;</span>
+                <h2>Criar nova postagem</h2>
+                <form id="formPostagemForm">
+                    <input type="text" id="tituloPostagem" placeholder="Título da postagem" required />
+                    <textarea id="conteudoPostagem" placeholder="Escreva aqui seu conteúdo..." rows="5"
+                        required></textarea>
+                    <input type="text" id="categoriaPostagem" placeholder="Categoria (opcional)" />
+                    <button type="submit">Publicar</button>
+                </form>
+            </div>
+        </div>
+
+
         <main class="PrincipalForum">
             <div class="barraPesquisa">
                 <input type="text" placeholder="Busque palavra-chave/ forum/ etc" />
                 <span class="search-icon">🔍</span>
             </div>
 
-            <% posts.forEach(post=> { %>
-                <div class="post">
-                    <div class="forum-info">
-                        <div class="avatar"></div>
-                        <span>
-                            <%= post.forum %>
-                        </span>
+            <% if (posts && posts.length> 0) { %>
+                <% posts.forEach(post=> { %>
+                    <div class="post">
+                        <div class="forum-info">
+                            <div class="avatar"></div>
+                            <span>
+                                <%= post.forum || 'Geral' %>
+                            </span>
+                        </div>
+                        <h2>
+                            <%= post.titulo %>
+                        </h2>
+                        <br>
+                        <div class="ConteudoPost">
+                            <%= post.conteudo %>
+                        </div>
                     </div>
-                    <h2>
-                        <%= post.titulo %>
-                    </h2> 
-                    <br>
-                    <div class="ConteudoPost">
-                        <%= post.conteudo %>
-                    </div>
-                </div>
-                <% }) %>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="nenhum-post">
+                                <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
+                            </div>
+                            <% } %>
+                                <% posts.forEach(post=> { %>
+                                    <div class="post">
+                                        <div class="forum-info">
+                                            <div class="avatar"></div>
+                                            <span>
+                                                <%= post.forum %>
+                                            </span>
+                                        </div>
+                                        <h2>
+                                            <%= post.titulo %>
+                                        </h2>
+                                        <br>
+                                        <div class="ConteudoPost">
+                                            <%= post.conteudo %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
 
-                    <button class="add-button">+</button>
+                                        <!-- Botão flutuante -->
+                                        <button class="botao-add" onclick="mostrarFormulario()">+</button>
+
+                                        <!-- Formulário oculto -->
+                                        <script>
+                                            function mostrarFormulario() {
+                                                document.getElementById("formPostagem").style.display = "block";
+                                                document.getElementById("tituloPostagem").value = "";
+                                                document.getElementById("conteudoPostagem").value = "";
+                                                document.getElementById("categoriaPostagem").value = "";
+                                            }
+
+                                            function fecharFormulario() {
+                                                document.getElementById("formPostagem").style.display = "none";
+                                            }
+
+                                            document.getElementById("formPostagemForm").addEventListener("submit", async function (event) {
+                                                event.preventDefault();
+
+                                                const titulo = document.getElementById("tituloPostagem").value;
+                                                const conteudo = document.getElementById("conteudoPostagem").value;
+                                                const categoria = document.getElementById("categoriaPostagem").value;
+                                                const ID_USUARIO_T01 = <%= JSON.stringify(user.ID_USUARIO_T01) %>;
+
+                                                try {
+                                                    const response = await fetch("/postagens", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({
+                                                            ID_USUARIO_T01,
+                                                            TITULO_POST_T05: titulo,
+                                                            CONTEUDO_POST_T05: conteudo,
+                                                            CATEGORIA_POST_T05: categoria
+                                                        })
+                                                    });
+
+                                                    const result = await response.json();
+
+                                                    if (response.ok) {
+                                                        alert("Postagem criada com sucesso!");
+                                                        fecharFormulario();
+                                                        window.location.reload();
+                                                    } else {
+                                                        alert("Erro ao criar postagem: " + result.erro);
+                                                    }
+                                                } catch (error) {
+                                                    console.error("Erro:", error);
+                                                    alert("Erro ao enviar a requisição.");
+                                                }
+                                            });
+                                        </script>
+
         </main>
     </div>
 

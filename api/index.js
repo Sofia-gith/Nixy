@@ -68,7 +68,8 @@ app.get('/usuario', async (req, res) => {
 
     const user = rows[0];
 
-    res.render("usuario", { user });
+    res.render("usuario", { usuario: user });
+
   } catch (err) {
     console.error("Erro ao carregar usuário:", err);
     res.status(500).send("Erro ao carregar a página.");
@@ -87,7 +88,10 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/agenda", (req, res) => {
+app.get("/agenda", async (req, res) => {
+  const user = req.session.user;
+  if (!user) return res.redirect("/login");
+
   const now = new Date();
   const { month, year } = req.query;
 
@@ -115,62 +119,115 @@ app.get("/agenda", (req, res) => {
   const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
   const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
 
-  res.render("agenda", {
-    user: req.session.user,
-    usuarioNome: "usuario_nome",
-    mostrarMenu: true,
-    month: currentMonth,
-    year: currentYear,
-    days,
-    isToday,
-    monthName: new Date(currentYear, currentMonth).toLocaleString("pt-BR", { month: "long" }),
-    prevMonth,
-    prevYear,
-    nextMonth,
-    nextYear
-  });
+  // 🔍 Consulta ao banco para pegar os dias estudados do usuário naquele mês
+  try {
+    const [diasEstudados] = await db.query(
+      `SELECT DATA_ESTUDO FROM dias_estudados_t01 
+       WHERE ID_USUARIO_T01 = ? 
+       AND MONTH(DATA_ESTUDO) = ? 
+       AND YEAR(DATA_ESTUDO) = ?`,
+      [user.ID_USUARIO_T01, currentMonth + 1, currentYear]
+    );
+
+    // Cria um Set com os dias estudados (apenas o dia, sem o mês e ano)
+    const diasEstudadosSet = new Set(
+      diasEstudados.map((row) => new Date(row.DATA_ESTUDO).getDate())
+    );
+
+    res.render("agenda", {
+      user,
+      usuarioNome: user.NOME_USUARIO_T01,
+      mostrarMenu: true,
+      month: currentMonth,
+      year: currentYear,
+      days,
+      isToday,
+      monthName: new Date(currentYear, currentMonth).toLocaleString("pt-BR", { month: "long" }),
+      prevMonth,
+      prevYear,
+      nextMonth,
+      nextYear,
+      diasEstudadosSet
+    });
+  } catch (err) {
+    console.error("Erro ao carregar dias estudados:", err);
+    res.status(500).send("Erro ao carregar a agenda.");
+  }
 });
+
+
+app.post('/agenda/marcar-dia', async (req, res) => {
+  const user = req.session.user;
+  const { data } = req.body;
+
+  if (!user || !data) return res.status(400).send("Requisição inválida");
+
+  try {
+    await db.query(
+      'INSERT IGNORE INTO dias_estudados_t01 (ID_USUARIO_T01, DATA_ESTUDO) VALUES (?, ?)',
+      [user.ID_USUARIO_T01, data]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Erro ao marcar dia:", err);
+    res.status(500).send("Erro ao salvar dia estudado");
+  }
+});
+
 
 app.get("/estatisticas", async (req, res) => {
   const user = req.session.user;
   if (!user) return res.redirect("/login");
 
   try {
+  
     const [[{ totalSegundos }]] = await db.query(
       `SELECT COALESCE(SUM(SEGUNDOS_GASTOS), 0) AS totalSegundos
        FROM pomodoro_t01
        WHERE ID_USUARIO_T01 = ?`,
       [user.ID_USUARIO_T01]
     );
+    const progressoHoras = (totalSegundos / 3600).toFixed(1);
 
-    const progressoHoras = (totalSegundos / 3600).toFixed(1); // em horas, com 1 casa decimal
+  
+    const [diasEstudadosRows] = await db.query(
+      `SELECT DATA_ESTUDO FROM dias_estudados_t01 WHERE ID_USUARIO_T01 = ?`,
+      [user.ID_USUARIO_T01]
+    );
+
+    const diasEstudadosUsuario = diasEstudadosRows.map(row => new Date(row.DATA_ESTUDO));
+
+    const agora = new Date();
+    const mesAtual = agora.getMonth();      
+    const anoAtual = agora.getFullYear();   
+
+    const diasEstudadosMesAtual = diasEstudadosUsuario.filter(data => {
+      return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+    }).length;
+
+   
+    const diasEstudadosPorMes = Array(12).fill(0);
+    diasEstudadosUsuario.forEach(data => {
+      if (data.getFullYear() === anoAtual) {
+        diasEstudadosPorMes[data.getMonth()]++;
+      }
+    });
 
     res.render('estatisticas', {
       user,
       mostrarMenu: true,
-      diasSeguidos: 10,
+      diasEstudados: diasEstudadosPorMes, 
+      diasEstudadosMesAtual,              
       horasEstudadas: progressoHoras,
       posts: 0,
       progressoHoras,
-      graficoBarras: [3, 1, 5],
-      graficoBarras2: [2, 1, 4, 0.5, 3],
-      calendario: gerarDiasDoMes(2025, 2)
     });
+
   } catch (err) {
     console.error("Erro ao carregar estatísticas:", err);
     res.status(500).send("Erro ao carregar estatísticas.");
   }
 });
-
-
-function gerarDiasDoMes(ano, mes) {
-  const dias = [];
-  const totalDias = new Date(ano, mes + 1, 0).getDate();
-  for (let i = 1; i <= totalDias; i++) {
-    dias.push(i);
-  }
-  return dias;
-}
 
 app.get("/pomodoro", (req, res) => {
   res.render("pomodoro", { user: req.session.user, usuarioNome: "usuario_nome", mostrarMenu: true });
@@ -232,6 +289,8 @@ app.get('/esqueciAsenha', (req, res) => {
   });
 });
 
+
+
 app.get('/cadastro', (req, res) => {
   res.status(200).render('cadastro', {
     mostrarMenu: false,
@@ -252,19 +311,64 @@ app.get('/landingPage', (req, res) => {
 
 //forúm
 
-app.get("/Forum", (req, res) => {
-  res.render("Forum", { mostrarMenu: false, 
-    posts: [
-      {
-        forum: 'Estudos de Programação',
-        titulo: 'Como programar?',
-        conteudo: 'Você pode usar EJS para renderizar HTML dinâmico com JavaScript no servidor.'
-      }
-    ],
-    comunidades: ['comunidade 1', 'comunidade 2', 'comunidade 3', 'comunidade 4']
-  });
-}); 
 
+async function buscarPosts() {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        p.ID_POST_T05 as id,
+        p.TITULO_POST_T05 as titulo,
+        p.CONTEUDO_POST_T05 as conteudo,
+        p.CATEGORIA_POST_T05 as forum,
+        u.NOME_USUARIO_T01 as autor,
+        p.DATA_CRIACAO_POST_T05 as data
+      FROM POST_T05 p
+      JOIN USUARIO_T01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
+      ORDER BY p.DATA_CRIACAO_POST_T05 DESC
+    `);
+    return rows;
+  } catch (err) {
+    console.error("Erro ao buscar posts:", err);
+    return [];
+  }
+}
+
+async function buscarComunidades() {
+  try {
+    const [rows] = await db.query(`
+      SELECT DISTINCT CATEGORIA_POST_T05 as nome 
+      FROM POST_T05 
+      WHERE CATEGORIA_POST_T05 IS NOT NULL
+    `);
+    return rows.map(row => row.nome);
+  } catch (err) {
+    console.error("Erro ao buscar comunidades:", err);
+    return [];
+  }
+}
+
+app.use('/postagens', postagemRoutes);
+
+app.get("/forum", async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const posts = await buscarPosts();
+    const comunidades = await buscarComunidades();
+
+    res.render("forum", {
+      user: req.session.user,
+      posts,
+      comunidades,
+      mostrarMenu: true
+    });
+  } catch (err) {
+    console.error("Erro ao carregar fórum:", err);
+    res.status(500).send("Erro ao carregar o fórum");
+  }
+});
 app.use(routes);
 
 
