@@ -1,6 +1,6 @@
-
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import multer from "multer";
 
  cloudinary.config({ 
         cloud_name: 'dhhvgocpf', 
@@ -15,6 +15,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
+const upload = multer({ storage });
 
 
 export { cloudinary, storage };

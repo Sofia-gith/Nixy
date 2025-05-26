@@ -9,6 +9,9 @@ import anotacaoRoutes from './routes/anotacao.js';
 import { ensureAuthenticated } from './middlewares/auth.js';
 import bcrypt from 'bcrypt';
 import pomodoroRoutes from './routes/pomodoro.js';
+import multerUpload from "./middlewares/upload.js";
+import postRoutes from "./routes/postsRoutes.js";
+
 
 
 const app = express();
@@ -51,6 +54,7 @@ app.use((req, res, next) => {
   res.locals.menuItems = menuItems;
   next();
 });
+
 
 app.get('/usuario', async (req, res) => {
   const usuarioLogado = req.session.user;
@@ -119,7 +123,7 @@ app.get("/agenda", async (req, res) => {
   const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
   const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
 
-  // 🔍 Consulta ao banco para pegar os dias estudados do usuário naquele mês
+  //  Consulta ao banco para pegar os dias estudados do usuário naquele mês
   try {
     const [diasEstudados] = await db.query(
       `SELECT DATA_ESTUDO FROM dias_estudados_t01 
@@ -370,6 +374,9 @@ app.get("/forum", async (req, res) => {
   }
 });
 app.use(routes);
+
+app.use("/uploads", express.static("uploads"));
+app.use("/posts", postRoutes);
 
 
 

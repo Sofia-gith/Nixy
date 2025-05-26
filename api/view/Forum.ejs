@@ -19,21 +19,31 @@
             <div class="modal-content">
                 <span class="close" onclick="fecharFormulario()">&times;</span>
                 <h2>Criar nova postagem</h2>
-                <form id="formPostagemForm">
-                    <input type="text" id="tituloPostagem" placeholder="Título da postagem" required />
-                    <textarea id="conteudoPostagem" placeholder="Escreva aqui seu conteúdo..." rows="5"
+                <form id="formPostagemForm" enctype="multipart/form-data">
+                    <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem" required />
+                    <textarea id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" placeholder="Escreva aqui seu conteúdo..."
                         required></textarea>
-                    <input type="text" id="categoriaPostagem" placeholder="Categoria (opcional)" />
+                    <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05" placeholder="Categoria (opcional)" />
+
+
+                    <label for="arquivoPostagem" style="cursor: pointer;">
+                        📎 Anexar arquivo
+                        <input type="file" id="arquivoPostagem" name="arquivo" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                            style="display: none;" />
+                    </label>
                     <button type="submit">Publicar</button>
                 </form>
             </div>
         </div>
 
 
+
+
         <main class="PrincipalForum">
             <div class="barraPesquisa">
+                <span class="search-icon"><img src="../imagens/procurar.png" alt=""></span>
                 <input type="text" placeholder="Busque palavra-chave/ forum/ etc" />
-                <span class="search-icon">🔍</span>
+
             </div>
 
             <% if (posts && posts.length> 0) { %>
@@ -51,6 +61,16 @@
                         <br>
                         <div class="ConteudoPost">
                             <%= post.conteudo %>
+                                <% if (post.ARQUIVO_POST_T05) { %>
+                                    <div class="arquivo-post">
+                                        <% if (post.arquivo) { %>
+                                            <div class="arquivo-post">
+                                                <a href="<%= post.arquivo %>" target="_blank">Ver anexo</a>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                    <% } %>
+
                         </div>
                     </div>
                     <% }) %>
@@ -59,76 +79,62 @@
                                 <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
                             </div>
                             <% } %>
-                                <% posts.forEach(post=> { %>
-                                    <div class="post">
-                                        <div class="forum-info">
-                                            <div class="avatar"></div>
-                                            <span>
-                                                <%= post.forum %>
-                                            </span>
-                                        </div>
-                                        <h2>
-                                            <%= post.titulo %>
-                                        </h2>
-                                        <br>
-                                        <div class="ConteudoPost">
-                                            <%= post.conteudo %>
-                                        </div>
-                                    </div>
-                                    <% }) %>
 
-                                        <!-- Botão flutuante -->
-                                        <button class="botao-add" onclick="mostrarFormulario()">+</button>
 
-                                        <!-- Formulário oculto -->
-                                        <script>
-                                            function mostrarFormulario() {
-                                                document.getElementById("formPostagem").style.display = "block";
-                                                document.getElementById("tituloPostagem").value = "";
-                                                document.getElementById("conteudoPostagem").value = "";
-                                                document.getElementById("categoriaPostagem").value = "";
-                                            }
 
-                                            function fecharFormulario() {
-                                                document.getElementById("formPostagem").style.display = "none";
-                                            }
+                                <!-- Botão flutuante -->
+                                <button class="botao-add" onclick="mostrarFormulario()">+</button>
 
-                                            document.getElementById("formPostagemForm").addEventListener("submit", async function (event) {
-                                                event.preventDefault();
+                                <!-- Formulário oculto -->
+                                <script>
+                                    function mostrarFormulario() {
+                                        document.getElementById("formPostagem").style.display = "block";
+                                        document.getElementById("TITULO_POST_T05").value = "";
+                                        document.getElementById("CONTEUDO_POST_T05").value = "";
+                                        document.getElementById("CATEGORIA_POST_T05").value = "";
+                                    }
 
-                                                const titulo = document.getElementById("tituloPostagem").value;
-                                                const conteudo = document.getElementById("conteudoPostagem").value;
-                                                const categoria = document.getElementById("categoriaPostagem").value;
-                                                const ID_USUARIO_T01 = <%= JSON.stringify(user.ID_USUARIO_T01) %>;
+                                    function fecharFormulario() {
+                                        document.getElementById("formPostagem").style.display = "none";
+                                    }
 
-                                                try {
-                                                    const response = await fetch("/postagens", {
-                                                        method: "POST",
-                                                        headers: { "Content-Type": "application/json" },
-                                                        body: JSON.stringify({
-                                                            ID_USUARIO_T01,
-                                                            TITULO_POST_T05: titulo,
-                                                            CONTEUDO_POST_T05: conteudo,
-                                                            CATEGORIA_POST_T05: categoria
-                                                        })
-                                                    });
+                                    document.getElementById("formPostagemForm").addEventListener("submit", async function (event) {
+                                        event.preventDefault();
 
-                                                    const result = await response.json();
+                                        const titulo = document.getElementById("TITULO_POST_T05").value;
+                                        const conteudo = document.getElementById("CONTEUDO_POST_T05").value;
+                                        const categoria = document.getElementById("CATEGORIA_POST_T05").value;
 
-                                                    if (response.ok) {
-                                                        alert("Postagem criada com sucesso!");
-                                                        fecharFormulario();
-                                                        window.location.reload();
-                                                    } else {
-                                                        alert("Erro ao criar postagem: " + result.erro);
-                                                    }
-                                                } catch (error) {
-                                                    console.error("Erro:", error);
-                                                    alert("Erro ao enviar a requisição.");
-                                                }
+                                        const ID_USUARIO_T01 = <%= JSON.stringify(user.ID_USUARIO_T01) %>;
+
+                                        try {
+                                            const response = await fetch("/postagens", {
+                                                method: "POST",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({
+                                                    ID_USUARIO_T01,
+                                                    TITULO_POST_T05: titulo,
+                                                    CONTEUDO_POST_T05: conteudo,
+                                                    CATEGORIA_POST_T05: categoria
+                                                })
                                             });
-                                        </script>
 
+                                            const result = await response.json();
+
+                                            if (response.ok) {
+                                                alert("Postagem criada com sucesso!");
+                                                fecharFormulario();
+                                                window.location.reload();
+                                            } else {
+                                                alert("Erro ao criar postagem: " + result.erro);
+                                            }
+                                        } catch (error) {
+                                            console.error("Erro:", error);
+                                            alert("Erro ao enviar a requisição.");
+                                        }
+                                    });
+
+                                </script>
         </main>
     </div>
 

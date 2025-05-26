@@ -9,11 +9,11 @@
                 <div class="foto-perfil">
                     <% if (usuario && usuario.FOTO_PERFIL_URL) { %>
                         <img src="<%= usuario.FOTO_PERFIL_URL %>" alt="Imagem de perfil" />
-                        <% } else { %>
-                            <img src="/img/default.png" alt="Imagem padrão" />
-                            <% } %>
-                                <input type="file" name="foto" id="foto" accept="image/*" required>
-                                <button type="submit" class="btn-camera">📷</button>
+                    <% } else { %>
+                        <img src="/img/default.png" alt="Imagem padrão" />
+                    <% } %>
+                        <input type="file" name="foto" id="foto" accept="image/*" required>
+                        <button type="submit" class="btn-camera">📷</button>
                 </div>
             </form>
 

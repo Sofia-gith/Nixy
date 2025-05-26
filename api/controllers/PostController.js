@@ -2,31 +2,45 @@ import { db } from "../db.js";
 
 // Função para criar uma postagem
 export const criarPostagem = (req, res) => {
-    const { ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 } = req.body;
+  console.log("req.body:", req.body);
+  console.log("req.file:", req.file); 
+  console.log("req.cloudinaryResult:", req.cloudinaryResult); 
+  
+  const { ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 } = req.body;
 
-    if (!ID_USUARIO_T01 || !TITULO_POST_T05 || !CONTEUDO_POST_T05) {
-        return res.status(400).json({ erro: 'Campos obrigatórios não preenchidos' });
-    }
+  if (!ID_USUARIO_T01 || !TITULO_POST_T05 || !CONTEUDO_POST_T05) {
+      return res.status(400).json({ erro: 'Campos obrigatórios não preenchidos' });
+  }
 
-    const query = `
-        INSERT INTO POST_T05 
-        (ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05) 
-        VALUES (?, ?, ?, ?)
-    `;
+  let arquivoURL = null;
+  if (req.cloudinaryResult) {
+      arquivoURL = req.cloudinaryResult.secure_url;  
+  }
 
-    db.query(query, [ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 || null])
-        .then(result => {
-            res.status(201).json({ mensagem: 'Postagem criada com sucesso', id_post: result.insertId });
-        })
-        .catch(err => {
-            console.error('Erro ao criar postagem:', err);
-            return res.status(500).json({ erro: 'Erro interno ao criar postagem' });
-        });
+  const query = `
+      INSERT INTO POST_T05 
+      (ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05, ARQUIVO_POST_T05) 
+      VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(query, [ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 || null, arquivoURL])
+      .then(result => {
+          res.status(201).json({ mensagem: 'Postagem criada com sucesso', id_post: result.insertId });
+      })
+      .catch(err => {
+          console.error('Erro ao criar postagem:', err);
+          return res.status(500).json({ erro: 'Erro interno ao criar postagem' });
+      });
+
 };
+
+
+
+
 
 // Função para obter todas as postagens
 export const getTodasPostagens = (req, res) => {
-  const query = `
+    const query = `
     SELECT 
       p.ID_POST_T05 as id,
       p.TITULO_POST_T05 as titulo,
@@ -39,14 +53,14 @@ export const getTodasPostagens = (req, res) => {
     ORDER BY p.DATA_CRIACAO_POST_T05 DESC
   `;
 
-  db.query(query)
-    .then(result => {
-      res.status(200).json(result);
-    })
-    .catch(err => {
-      console.error('Erro ao buscar postagens:', err);
-      return res.status(500).json({ erro: 'Erro ao buscar postagens' });
-    });
+    db.query(query)
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            console.error('Erro ao buscar postagens:', err);
+            return res.status(500).json({ erro: 'Erro ao buscar postagens' });
+        });
 };
 
 // Função para obter uma postagem por ID
@@ -66,7 +80,7 @@ export const getPostagemPorId = (req, res) => {
             return res.status(500).json({ erro: 'Erro ao buscar postagem' });
         });
 };
-        // Função para atualizar uma postagem
+// Função para atualizar uma postagem
 export const atualizarPostagem = (req, res) => {
     const id = req.params.id;
     const { TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 } = req.body;
@@ -94,7 +108,7 @@ export const atualizarPostagem = (req, res) => {
         });
 };
 
-    // Função para deletar uma postagem
+// Função para deletar uma postagem
 export const deletarPostagem = (req, res) => {
     const id = req.params.id;
     const query = 'DELETE FROM POST_T05 WHERE ID_POST_T05 = ?';
@@ -149,8 +163,8 @@ export const curtirPostagem = (req, res) => {
 // Função para adicionar ou atualizar avaliação (positiva ou negativa)
 export const adicionarOuAtualizarAvaliacao = (req, res) => {
     const idPost = req.params.id;
-    const idUsuario = req.body.ID_USUARIO_T01;  
-    const tipoAvaliacao = req.body.TIPO_AVALIACAO_T08; 
+    const idUsuario = req.body.ID_USUARIO_T01;
+    const tipoAvaliacao = req.body.TIPO_AVALIACAO_T08;
 
     // Verificar se o tipo de avaliação é válido
     if (!['positivo', 'negativo'].includes(tipoAvaliacao)) {
@@ -163,7 +177,7 @@ export const adicionarOuAtualizarAvaliacao = (req, res) => {
     db.query(checkQuery, [idPost, idUsuario])
         .then(result => {
             if (result.length > 0) {
-                
+
                 const updateQuery = `
                     UPDATE AVALIACAO_T08 
                     SET TIPO_AVALIACAO_T08 = ? 
@@ -203,7 +217,7 @@ export const adicionarOuAtualizarAvaliacao = (req, res) => {
 // Função para remover a avaliação 
 export const removerAvaliacao = (req, res) => {
     const idPost = req.params.id;
-    const idUsuario = req.body.ID_USUARIO_T01;  
+    const idUsuario = req.body.ID_USUARIO_T01;
 
     // Verificar se o usuário já avaliou essa postagem
     const checkQuery = 'SELECT * FROM AVALIACAO_T08 WHERE ID_POST_T05 = ? AND ID_USUARIO_T01 = ?';
