@@ -6,7 +6,7 @@ export const criarPostagem = (req, res) => {
   console.log("req.file:", req.file); 
   console.log("req.cloudinaryResult:", req.cloudinaryResult); 
   
-  const { ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 } = req.body;
+  const { ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05 } = req.body;
 
   if (!ID_USUARIO_T01 || !TITULO_POST_T05 || !CONTEUDO_POST_T05) {
       return res.status(400).json({ erro: 'Campos obrigatórios não preenchidos' });
@@ -19,11 +19,11 @@ export const criarPostagem = (req, res) => {
 
   const query = `
       INSERT INTO POST_T05 
-      (ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05, ARQUIVO_POST_T05) 
-      VALUES (?, ?, ?, ?, ?)
+      (ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, ARQUIVO_POST_T05) 
+      VALUES (?, ?, ?, ?)
   `;
 
-  db.query(query, [ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, CATEGORIA_POST_T05 || null, arquivoURL])
+  db.query(query, [ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, arquivoURL])
       .then(result => {
           res.status(201).json({ mensagem: 'Postagem criada com sucesso', id_post: result.insertId });
       })

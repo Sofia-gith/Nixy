@@ -39,6 +39,8 @@ const multerUpload = multer({
 // Middleware final (upload + Cloudinary)
 const uploadMiddleware = (req, res, next) => {
   multerUpload(req, res, async (err) => {
+    console.log('Arquivo recebido:', req.file);
+    
     if (err) {
       return res.status(400).json({ erro: err.message });
     }

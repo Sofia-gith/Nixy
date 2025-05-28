@@ -20,10 +20,12 @@
                 <span class="close" onclick="fecharFormulario()">&times;</span>
                 <h2>Criar nova postagem</h2>
                 <form id="formPostagemForm" enctype="multipart/form-data">
-                    <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem" required />
+                    <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem"
+                        required />
                     <textarea id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" placeholder="Escreva aqui seu conteúdo..."
                         required></textarea>
-                    <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05" placeholder="Categoria (opcional)" />
+                    <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05"
+                        placeholder="Categoria (opcional)" />
 
 
                     <label for="arquivoPostagem" style="cursor: pointer;">
@@ -65,7 +67,7 @@
                                     <div class="arquivo-post">
                                         <% if (post.arquivo) { %>
                                             <div class="arquivo-post">
-                                                <a href="<%= post.arquivo %>" target="_blank">Ver anexo</a>
+                                                <a href="<%= pos"t.arquivo %>" target="_blank">Ver anexo</a>
                                             </div>
                                             <% } %>
                                     </div>
@@ -116,8 +118,11 @@
                                                     TITULO_POST_T05: titulo,
                                                     CONTEUDO_POST_T05: conteudo,
                                                     CATEGORIA_POST_T05: categoria
+
                                                 })
                                             });
+
+
 
                                             const result = await response.json();
 
