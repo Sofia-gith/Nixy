@@ -11,7 +11,7 @@ import bcrypt from 'bcrypt';
 import pomodoroRoutes from './routes/pomodoro.js';
 import multerUpload from "./middlewares/upload.js";
 import postRoutes from "./routes/postsRoutes.js";
-
+import comunidadeRoutes from './routes/comunidade.js';
 
 
 const app = express();
@@ -314,8 +314,6 @@ app.get('/landingPage', (req, res) => {
 });
 
 //forúm
-
-
 async function buscarPosts() {
   try {
     const [rows] = await db.query(`
@@ -383,6 +381,13 @@ app.use("/posts", postRoutes);
 // Adicionando as rotas de postagem
 app.use('/api/postagen', postagemRoutes);
 
+
+//Rota de Comunidade 
+app.use(express.json());
+app.use('/comunidade', comunidadeRoutes);
+
+
+//bang do servidor rodando ou sei lá XD
 app.listen(8080, () => {
   console.log("Rodando na porta 8080");
 })
