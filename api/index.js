@@ -12,6 +12,7 @@ import pomodoroRoutes from './routes/pomodoro.js';
 import multerUpload from "./middlewares/upload.js";
 import postRoutes from "./routes/postsRoutes.js";
 import comunidadeRoutes from './routes/comunidade.js';
+import uploadMiddleware from "./middlewares/uploadMiddleware.js";
 
 
 const app = express();
@@ -55,7 +56,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
+app.use(express.json());
 app.get('/usuario', async (req, res) => {
   const usuarioLogado = req.session.user;
 
@@ -314,20 +315,29 @@ app.get('/landingPage', (req, res) => {
 });
 
 //forúm
-async function buscarPosts() {
+async function buscarPosts(req) {
   try {
+    const userId = req.session.user?.ID_USUARIO_T01 || 0;
+    
     const [rows] = await db.query(`
       SELECT 
         p.ID_POST_T05 as id,
         p.TITULO_POST_T05 as titulo,
         p.CONTEUDO_POST_T05 as conteudo,
         p.CATEGORIA_POST_T05 as forum,
+        p.ARQUIVO_POST_T05 as arquivo,
         u.NOME_USUARIO_T01 as autor,
-        p.DATA_CRIACAO_POST_T05 as data
+        p.DATA_CRIACAO_POST_T05 as data,
+        COALESCE(SUM(CASE WHEN a.TIPO_AVALIACAO_T08 = 'positivo' THEN 1 ELSE 0 END), 0) as likes,
+        COALESCE(SUM(CASE WHEN a.TIPO_AVALIACAO_T08 = 'negativo' THEN 1 ELSE 0 END), 0) as dislikes,
+        (SELECT COUNT(*) FROM AVALIACAO_T08 WHERE ID_POST_T05 = p.ID_POST_T05 AND ID_USUARIO_T01 = ?) as user_vote
       FROM POST_T05 p
       JOIN USUARIO_T01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
+      LEFT JOIN AVALIACAO_T08 a ON p.ID_POST_T05 = a.ID_POST_T05
+      GROUP BY p.ID_POST_T05
       ORDER BY p.DATA_CRIACAO_POST_T05 DESC
-    `);
+    `, [userId]);
+
     return rows;
   } catch (err) {
     console.error("Erro ao buscar posts:", err);
@@ -349,7 +359,13 @@ async function buscarComunidades() {
   }
 }
 
-app.use('/postagens', postagemRoutes);
+app.post('/postagens', uploadMiddleware, (req, res, next) => {
+    // Adicione o resultado do Cloudinary ao body
+    if (req.cloudinaryResult) {
+        req.body.arquivo = req.cloudinaryResult.secure_url;
+    }
+    next();
+}, postagemRoutes);
 
 app.get("/forum", async (req, res) => {
   if (!req.session.user) {
@@ -357,8 +373,20 @@ app.get("/forum", async (req, res) => {
   }
 
   try {
-    const posts = await buscarPosts();
-    const comunidades = await buscarComunidades();
+    const posts = await buscarPosts(req);
+    
+    
+    const [comunidades] = await db.query(`
+      SELECT 
+        c.ID_COMUNIDADE_T14,
+        c.NOME_COMUNIDADE_T14,
+        c.DESCRICAO_COMUNIDADE_T14,
+        COUNT(uc.ID_USUARIO_T01) as total_membros
+      FROM comunidade_t14 c
+      LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
+      GROUP BY c.ID_COMUNIDADE_T14
+      ORDER BY total_membros DESC
+    `);
 
     res.render("forum", {
       user: req.session.user,
@@ -371,10 +399,12 @@ app.get("/forum", async (req, res) => {
     res.status(500).send("Erro ao carregar o fórum");
   }
 });
+
+
 app.use(routes);
 
-app.use("/uploads", express.static("uploads"));
-app.use("/posts", postRoutes);
+
+
 
 
 
@@ -383,7 +413,7 @@ app.use('/api/postagen', postagemRoutes);
 
 
 //Rota de Comunidade 
-app.use(express.json());
+
 app.use('/comunidade', comunidadeRoutes);
 
 

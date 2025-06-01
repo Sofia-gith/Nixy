@@ -12,6 +12,14 @@ export async function criarComunidade(req, res) {
     if (!idUsuarioCriador) {
       return res.status(400).json({ error: 'idUsuarioCriador é obrigatório para teste' });
     }
+    const [existing] = await db.query(
+      'SELECT * FROM comunidade_t14 WHERE NOME_COMUNIDADE_T14 = ?',
+      [nome]
+    );
+
+    if (existing.length > 0) {
+      return res.status(400).json({ error: 'Já existe uma comunidade com este nome' });
+    }
 
     const [result] = await db.query(
       'INSERT INTO comunidade_t14 (NOME_COMUNIDADE_T14, DESCRICAO_COMUNIDADE_T14, ID_USUARIO_CRIADOR) VALUES (?, ?, ?)',
@@ -35,3 +43,5 @@ export async function criarComunidade(req, res) {
     res.status(500).json({ error: 'Erro ao criar comunidade' });
   }
 }
+
+

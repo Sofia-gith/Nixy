@@ -1,20 +1,31 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
 
-
     <div class="AlinhaForum">
         <aside class="menuLateral">
-            <h3>Populares</h3>
+            <h3>Comunidades Populares</h3>
             <hr />
             <ul>
-                <% comunidades.forEach(com=> { %>
-                    <li>
-                        <%= com %>
-                    </li>
-                    <% }) %>
+                <% if (comunidades && comunidades.length> 0) { %>
+                    <% comunidades.forEach(com=> { %>
+                        <li>
+                            <a href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
+                                <%= com.NOME_COMUNIDADE_T14 %>
+                            </a>
+                            <small>(<%= com.total_membros || 0 %> membros)</small>
+                        </li>
+                        <% }) %>
+                            <% } else { %>
+                                <li>Nenhuma comunidade encontrada</li>
+                                <% } %>
             </ul>
+
+            <!-- Botão para criar nova comunidade -->
+            <button class="btn-criar-comunidade" onclick="mostrarFormularioComunidade()">
+                + Nova Comunidade
+            </button>
         </aside>
 
-
+        <!-- Modal para criar postagem -->
         <div id="formPostagem" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close" onclick="fecharFormulario()">&times;</span>
@@ -22,17 +33,35 @@
                 <form id="formPostagemForm" enctype="multipart/form-data">
                     <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem"
                         required />
+
                     <textarea id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" placeholder="Escreva aqui seu conteúdo..."
                         required></textarea>
-                    <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05"
-                        placeholder="Categoria (opcional)" />
 
+                    <!-- Dropdown para selecionar comunidade -->
+                    <select id="ID_COMUNIDADE_T14" name="ID_COMUNIDADE_T14">
+                        <option value="">Selecione uma comunidade (opcional)</option>
+                        <% if (comunidades && comunidades.length> 0) { %>
+                            <% comunidades.forEach(com=> { %>
+                                <option value="<%= com.ID_COMUNIDADE_T14 %>">
+                                    <%= com.NOME_COMUNIDADE_T14 %>
+                                </option>
+                                <% }) %>
+                                    <% } %>
+                    </select>
+
+                    <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05"
+                        placeholder="Tags/Categoria (opcional)" />
 
                     <label for="arquivoPostagem" style="cursor: pointer;">
                         📎 Anexar arquivo
                         <input type="file" id="arquivoPostagem" name="arquivo" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                             style="display: none;" />
                     </label>
+
+                    <div id="arquivo-preview" style="display: none;">
+                        <p>Arquivo selecionado: <span id="nome-arquivo"></span></p>
+                    </div>
+
                     <button type="submit">Publicar</button>
                 </form>
             </div>
@@ -40,110 +69,323 @@
 
 
 
+        <!-- Modal para criar comunidade -->
+        <div id="formComunidade" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="fecharFormularioComunidade()">&times;</span>
+                <h2>Criar nova comunidade</h2>
+                <form id="formComunidadeForm">
+                    <input type="text" id="NOME_COMUNIDADE_T14" name="nome" placeholder="Nome da comunidade" required />
+
+                    <textarea id="DESCRICAO_COMUNIDADE_T14" name="descricao"
+                        placeholder="Descrição da comunidade (opcional)"></textarea>
+
+                    <button type="submit">Criar Comunidade</button>
+                </form>
+            </div>
+        </div>
 
         <main class="PrincipalForum">
             <div class="barraPesquisa">
                 <span class="search-icon"><img src="../imagens/procurar.png" alt=""></span>
-                <input type="text" placeholder="Busque palavra-chave/ forum/ etc" />
-
+                <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ comunidade/ etc" />
+                <button onclick="pesquisarPosts()">Buscar</button>
             </div>
 
-            <% if (posts && posts.length> 0) { %>
-                <% posts.forEach(post=> { %>
-                    <div class="post">
-                        <div class="forum-info">
-                            <div class="avatar"></div>
-                            <span>
-                                <%= post.forum || 'Geral' %>
-                            </span>
-                        </div>
-                        <h2>
-                            <%= post.titulo %>
-                        </h2>
-                        <br>
-                        <div class="ConteudoPost">
-                            <%= post.conteudo %>
-                                <% if (post.ARQUIVO_POST_T05) { %>
-                                    <div class="arquivo-post">
-                                        <% if (post.arquivo) { %>
-                                            <div class="arquivo-post">
-                                                <a href="<%= pos"t.arquivo %>" target="_blank">Ver anexo</a>
-                                            </div>
-                                            <% } %>
-                                    </div>
-                                    <% } %>
-
-                        </div>
-                    </div>
-                    <% }) %>
-                        <% } else { %>
-                            <div class="nenhum-post">
-                                <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
+            <div id="posts-container">
+                <% if (posts && posts.length> 0) { %>
+                    <% posts.forEach(post=> { %>
+                        <div class="post" data-post-id="<%= post.id %>">
+                            <div class="forum-info">
+                                <div class="avatar"></div>
+                                <span>
+                                    <% if (post.comunidade_nome) { %>
+                                        c/<%= post.comunidade_nome %>
+                                            <% } else { %>
+                                                Geral
+                                                <% } %>
+                                </span>
+                                <span class="autor">• por <%= post.autor %></span>
+                                <span class="data">• <%= new Date(post.data).toLocaleDateString('pt-BR') %></span>
                             </div>
-                            <% } %>
 
+                            <h2>
+                                <%= post.titulo %>
+                            </h2>
 
+                            <div class="ConteudoPost">
+                                <%= post.conteudo %>
 
-                                <!-- Botão flutuante -->
-                                <button class="botao-add" onclick="mostrarFormulario()">+</button>
+                                    <% if (post.arquivo) { %>
+                                        <div class="arquivo-post">
+                                            <a href="<%= post.arquivo %>" target="_blank">
+                                                📎 Ver anexo
+                                            </a>
+                                        </div>
+                                        <% } %>
+                            </div>
 
-                                <!-- Formulário oculto -->
-                                <script>
-                                    function mostrarFormulario() {
-                                        document.getElementById("formPostagem").style.display = "block";
-                                        document.getElementById("TITULO_POST_T05").value = "";
-                                        document.getElementById("CONTEUDO_POST_T05").value = "";
-                                        document.getElementById("CATEGORIA_POST_T05").value = "";
-                                    }
+                            <!-- Sistema de avaliação -->
+                            <div class="interacoes-post">
+                                <div class="avaliacoes">
+                                    <button class="btn-avaliacao positivo"
+                                        onclick="avaliarPost(<%= post.id %>, 'positivo')">
+                                        <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
+                                        <span id="likes-<%= post.id %>">
+                                            <%= post.likes || 0 %>
+                                        </span>
+                                    </button>
 
-                                    function fecharFormulario() {
-                                        document.getElementById("formPostagem").style.display = "none";
-                                    }
+                                    <button class="btn-avaliacao negativo"
+                                        onclick="avaliarPost(<%= post.id %>, 'negativo')">
+                                        <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
+                                        <span id="dislikes-<%= post.id %>">
+                                            <%= post.dislikes || 0 %>
+                                        </span>
+                                    </button>
+                                </div>
 
-                                    document.getElementById("formPostagemForm").addEventListener("submit", async function (event) {
-                                        event.preventDefault();
+                                <div class="comentarios">
+                                    <button class="btn-comentarios" onclick="verComentarios(<%= post.id %>)">
+                                        <img src="/imagens/comente.png" alt=""> Comentários
+                                    </button>
+                                </div>
+                            </div>
 
-                                        const titulo = document.getElementById("TITULO_POST_T05").value;
-                                        const conteudo = document.getElementById("CONTEUDO_POST_T05").value;
-                                        const categoria = document.getElementById("CATEGORIA_POST_T05").value;
+                            <% if (post.forum && post.forum.length> 0) { %>
+                                <div class="tags">
+                                    <% post.forum.split(',').forEach(tag=> { %>
+                                        <span class="tag">
+                                            <%= tag.trim() %>
+                                        </span>
+                                        <% }) %>
+                                </div>
+                                <% } %>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="nenhum-post">
+                                    <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
+                                </div>
+                                <% } %>
+            </div>
 
-                                        const ID_USUARIO_T01 = <%= JSON.stringify(user.ID_USUARIO_T01) %>;
-
-                                        try {
-                                            const response = await fetch("/postagens", {
-                                                method: "POST",
-                                                headers: { "Content-Type": "application/json" },
-                                                body: JSON.stringify({
-                                                    ID_USUARIO_T01,
-                                                    TITULO_POST_T05: titulo,
-                                                    CONTEUDO_POST_T05: conteudo,
-                                                    CATEGORIA_POST_T05: categoria
-
-                                                })
-                                            });
-
-
-
-                                            const result = await response.json();
-
-                                            if (response.ok) {
-                                                alert("Postagem criada com sucesso!");
-                                                fecharFormulario();
-                                                window.location.reload();
-                                            } else {
-                                                alert("Erro ao criar postagem: " + result.erro);
-                                            }
-                                        } catch (error) {
-                                            console.error("Erro:", error);
-                                            alert("Erro ao enviar a requisição.");
-                                        }
-                                    });
-
-                                </script>
+            <!-- Botão flutuante -->
+            <button class="botao-add" onclick="mostrarFormulario()">+</button>
         </main>
     </div>
 
+    <script>
+        function mostrarFormulario() {
+            document.getElementById("formPostagem").style.display = "block";
+            document.getElementById("TITULO_POST_T05").value = "";
+            document.getElementById("CONTEUDO_POST_T05").value = "";
+            document.getElementById("CATEGORIA_POST_T05").value = "";
+        }
 
+        function fecharFormulario() {
+            document.getElementById("formPostagem").style.display = "none";
+        }
+        // Preview do arquivo selecionado
+        document.getElementById("arquivoPostagem").addEventListener("change", function (e) {
+            const arquivo = e.target.files[0];
+            const preview = document.getElementById("arquivo-preview");
+            const nomeArquivo = document.getElementById("nome-arquivo");
+
+            if (arquivo) {
+                // Verificar tamanho do arquivo (10MB máximo)
+                if (arquivo.size > 10 * 1024 * 1024) {
+                    alert("Arquivo muito grande! O tamanho máximo é 10MB.");
+                    e.target.value = "";
+                    preview.style.display = "none";
+                    return;
+                }
+
+                nomeArquivo.textContent = arquivo.name;
+                preview.style.display = "block";
+            } else {
+                preview.style.display = "none";
+            }
+        });
+        const arquivoInput = document.getElementById("arquivoPostagem");
+        if (arquivoInput.files.length > 0) {
+            formData.append("arquivo", arquivoInput.files[0]);
+        }
+
+
+
+        document.getElementById("formPostagemForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append("ID_USUARIO_T01", <%= JSON.stringify(user.ID_USUARIO_T01) %>);
+            formData.append("TITULO_POST_T05", document.getElementById("TITULO_POST_T05").value);
+            formData.append("CONTEUDO_POST_T05", document.getElementById("CONTEUDO_POST_T05").value);
+            formData.append("CATEGORIA_POST_T05", document.getElementById("CATEGORIA_POST_T05").value);
+
+
+            const arquivoInput = document.getElementById("arquivoPostagem");
+            if (arquivoInput.files[0]) {
+                formData.append("arquivo", arquivoInput.files[0]);
+            }
+
+
+            try {
+                const response = await fetch("/postagens", {
+                    method: "POST",
+                    body: formData  // Não definir Content-Type, o navegador fará isso automaticamente
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Postagem criada com sucesso!");
+                    fecharFormulario();
+                    window.location.reload();
+                } else {
+                    alert("Erro ao criar postagem: " + result.erro);
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao enviar a requisição.");
+            }
+        });
+
+        // Funções para o modal de comunidade
+        function mostrarFormularioComunidade() {
+            document.getElementById("formComunidade").style.display = "block";
+            document.getElementById("NOME_COMUNIDADE_T14").value = "";
+            document.getElementById("DESCRICAO_COMUNIDADE_T14").value = "";
+        }
+
+        function fecharFormularioComunidade() {
+            document.getElementById("formComunidade").style.display = "none";
+        }
+
+        // Envio do formulário de comunidade
+        document.getElementById("formComunidadeForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const nome = document.getElementById("NOME_COMUNIDADE_T14").value;
+            const descricao = document.getElementById("DESCRICAO_COMUNIDADE_T14").value;
+
+            try {
+                const response = await fetch("/comunidade", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        descricao: descricao,
+                        idUsuarioCriador: <%= JSON.stringify(user.ID_USUARIO_T01) %>
+            })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Comunidade criada com sucesso!");
+                    fecharFormularioComunidade();
+                    window.location.reload();
+                } else {
+                    alert("Erro ao criar comunidade: " + (result.error || "Erro desconhecido"));
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao enviar a requisição.");
+            }
+        });
+
+        //para avaliar os posts
+
+        // async function avaliarPost(postId, tipo) {
+        //     try {
+        //         console.log('Enviando avaliação:', { postId, tipo, userId: <%= JSON.stringify(user.ID_USUARIO_T01) %> });
+        //         const response = await fetch(`/posts/${postId}/avaliar`, {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //             },
+        //             body: JSON.stringify({
+        //                 tipo: tipo,
+        //                 ID_USUARIO_T01: <%= JSON.stringify(user.ID_USUARIO_T01) %>
+        //     })
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (response.ok) {
+
+        //             document.getElementById(`likes-${postId}`).textContent = result.likes;
+        //             document.getElementById(`dislikes-${postId}`).textContent = result.dislikes;
+
+
+        //             const btnPositivo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`);
+        //             const btnNegativo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`);
+
+        //             if (tipo === 'positivo') {
+        //                 btnPositivo.classList.toggle('ativo', result.acao === 'adicionado');
+        //                 btnNegativo.classList.remove('ativo');
+        //             } else {
+        //                 btnNegativo.classList.toggle('ativo', result.acao === 'adicionado');
+        //                 btnPositivo.classList.remove('ativo');
+        //             }
+        //         } else {
+        //             alert("Erro ao avaliar post: " + (result.erro || "Erro desconhecido"));
+        //         }
+        //     } catch (error) {
+        //         console.error("Erro:", error);
+        //         alert("Erro ao enviar a requisição.");
+        //     }
+        // }
+
+        const avaliacoesTemporarias = {};
+
+        function avaliarPost(postId, tipo) {
+            // Inicializa os contadores se não existirem
+            if (!avaliacoesTemporarias[postId]) {
+                avaliacoesTemporarias[postId] = {
+                    likes: parseInt(document.getElementById(`likes-${postId}`).textContent) || 0,
+                    dislikes: parseInt(document.getElementById(`dislikes-${postId}`).textContent) || 0
+                };
+            }
+
+            // Atualiza os contadores conforme o tipo
+            if (tipo === 'positivo') {
+                avaliacoesTemporarias[postId].likes += 1;
+                // Remove dislike se estiver ativo (opcional)
+                if (document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`).classList.contains('ativo')) {
+                    avaliacoesTemporarias[postId].dislikes -= 1;
+                }
+            } else if (tipo === 'negativo') {
+                avaliacoesTemporarias[postId].dislikes += 1;
+                // Remove like se estiver ativo (opcional)
+                if (document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`).classList.contains('ativo')) {
+                    avaliacoesTemporarias[postId].likes -= 1;
+                }
+            }
+
+            // Atualiza a exibição
+            document.getElementById(`likes-${postId}`).textContent = avaliacoesTemporarias[postId].likes;
+            document.getElementById(`dislikes-${postId}`).textContent = avaliacoesTemporarias[postId].dislikes;
+
+            // Atualiza estado visual dos botões (opcional)
+            const btnPositivo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`);
+            const btnNegativo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`);
+
+            if (tipo === 'positivo') {
+                btnPositivo.classList.toggle('ativo');
+                btnNegativo.classList.remove('ativo');
+            } else {
+                btnNegativo.classList.toggle('ativo');
+                btnPositivo.classList.remove('ativo');
+            }
+
+            console.log(`Post ${postId} avaliado:`, avaliacoesTemporarias[postId]);
+        }
+
+    </script>
     </body>
 
     </html>

@@ -46,7 +46,7 @@ const uploadMiddleware = (req, res, next) => {
     }
 
     if (!req.file) {
-      return res.status(400).json({ erro: "Nenhum arquivo enviado." });
+      return next(); 
     }
 
     try {
