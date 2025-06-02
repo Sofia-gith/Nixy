@@ -1075,21 +1075,29 @@ footer {
 }
 
 .avaliacoes { 
-  background-color: #F2D1EF;
+  
   height: 50px;
   width: 7%;
   border-radius: 20px;
   cursor: pointer;
 }
 
-.comentarios{
+.avaliacoes:hover { 
   background-color: #F2D1EF;
-  height: 50px;
-  width: 10%;
   border-radius: 20px;
   cursor: pointer;
 }
 
+.comentarios{
+  height: 50px;
+  width: 5%;
+  cursor: pointer;
+}
+
+.comentarios :hover{
+  background-color: #F2D1EF;
+  border-radius: 20px;
+}
 
 
 .forum-info {
@@ -1107,6 +1115,19 @@ footer {
   margin-right: 8px;
 }
 
+.avatar_comunidade{
+    width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ddd;
+  float: left;
+}
+
+.nomeComunidade{
+    background: none;
+    color: inherit;
+}
+
 .post h2 {
 
   text-align: left;
@@ -1118,10 +1139,10 @@ footer {
 
 .ConteudoPost {
   margin-top: 2%;
-  background-color: #C8CDEA;
+  background-color: #d9ddfc;
   padding: 20px;
   width: 80%;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 #likes {

@@ -9,8 +9,8 @@
                 <% if (comunidades && comunidades.length> 0) { %>
                     <% comunidades.forEach(com=> { %>
                         <li>
-                            <a href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
-                                <%= com.NOME_COMUNIDADE_T14 %>
+                            <a class="nomeComunidade" href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
+                                <div class="avatar_comunidade"></div><%= com.NOME_COMUNIDADE_T14 %>
                             </a>
                             <small>(<%= com.total_membros || 0 %> membros)</small>
                         </li>
