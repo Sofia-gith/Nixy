@@ -30,7 +30,7 @@
             <div class="modal-content">
                 <span class="close" onclick="fecharFormulario()">&times;</span>
                 <h2>Criar nova postagem</h2>
-                <form id="formPostagemForm" enctype="multipart/form-data">
+                <form id="formPostagemForm">
                     <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem"
                         required />
 
@@ -217,33 +217,34 @@
         document.getElementById("formPostagemForm").addEventListener("submit", async function (event) {
             event.preventDefault();
 
-            const formData = new FormData();
-            formData.append("ID_USUARIO_T01", <%= JSON.stringify(user.ID_USUARIO_T01) %>);
-            formData.append("TITULO_POST_T05", document.getElementById("TITULO_POST_T05").value);
-            formData.append("CONTEUDO_POST_T05", document.getElementById("CONTEUDO_POST_T05").value);
-            formData.append("CATEGORIA_POST_T05", document.getElementById("CATEGORIA_POST_T05").value);
+            const postData = {
+                ID_USUARIO_T01: <%= JSON.stringify(user.ID_USUARIO_T01) %>,
+                TITULO_POST_T05: document.getElementById("TITULO_POST_T05").value,
+                CONTEUDO_POST_T05: document.getElementById("CONTEUDO_POST_T05").value,
+                CATEGORIA_POST_T05: document.getElementById("CATEGORIA_POST_T05").value,
+                ID_COMUNIDADE_T14: document.getElementById("ID_COMUNIDADE_T14").value
+            };
 
-
-            const arquivoInput = document.getElementById("arquivoPostagem");
-            if (arquivoInput.files[0]) {
-                formData.append("arquivo", arquivoInput.files[0]);
-            }
-
+            console.log("Dados a serem enviados:", postData);
 
             try {
                 const response = await fetch("/postagens", {
                     method: "POST",
-                    body: formData  // Não definir Content-Type, o navegador fará isso automaticamente
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(postData)
                 });
 
                 const result = await response.json();
+                console.log("Resposta do servidor:", result);
 
                 if (response.ok) {
                     alert("Postagem criada com sucesso!");
                     fecharFormulario();
                     window.location.reload();
                 } else {
-                    alert("Erro ao criar postagem: " + result.erro);
+                    alert("Erro ao criar postagem: " + (result.erro || "Erro desconhecido"));
                 }
             } catch (error) {
                 console.error("Erro:", error);
@@ -297,92 +298,49 @@
             }
         });
 
-        //para avaliar os posts
+        // para avaliar os posts
 
-        // async function avaliarPost(postId, tipo) {
-        //     try {
-        //         console.log('Enviando avaliação:', { postId, tipo, userId: <%= JSON.stringify(user.ID_USUARIO_T01) %> });
-        //         const response = await fetch(`/posts/${postId}/avaliar`, {
-        //             method: "POST",
-        //             headers: {
-        //                 "Content-Type": "application/json",
-        //             },
-        //             body: JSON.stringify({
-        //                 tipo: tipo,
-        //                 ID_USUARIO_T01: <%= JSON.stringify(user.ID_USUARIO_T01) %>
-        //     })
-        //         });
+        async function avaliarPost(postId, tipo) {
+            try {
+                const response = await fetch(`/api/posts/${postId}/avaliar`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        tipo: tipo
+                        // Remova o ID_USUARIO_T01 do body, pois será pego da sessão
+                    })
+                });
 
-        //         const result = await response.json();
+                const result = await response.json();
 
-        //         if (response.ok) {
+                if (response.ok) {
+                    // Atualiza a UI
+                    document.getElementById(`likes-${postId}`).textContent = result.likes;
+                    document.getElementById(`dislikes-${postId}`).textContent = result.dislikes;
 
-        //             document.getElementById(`likes-${postId}`).textContent = result.likes;
-        //             document.getElementById(`dislikes-${postId}`).textContent = result.dislikes;
+                    // Atualiza classes dos botões
+                    const btnPositivo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`);
+                    const btnNegativo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`);
 
+                    // Remove todas as classes ativas primeiro
+                    btnPositivo.classList.remove('ativo');
+                    btnNegativo.classList.remove('ativo');
 
-        //             const btnPositivo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`);
-        //             const btnNegativo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`);
-
-        //             if (tipo === 'positivo') {
-        //                 btnPositivo.classList.toggle('ativo', result.acao === 'adicionado');
-        //                 btnNegativo.classList.remove('ativo');
-        //             } else {
-        //                 btnNegativo.classList.toggle('ativo', result.acao === 'adicionado');
-        //                 btnPositivo.classList.remove('ativo');
-        //             }
-        //         } else {
-        //             alert("Erro ao avaliar post: " + (result.erro || "Erro desconhecido"));
-        //         }
-        //     } catch (error) {
-        //         console.error("Erro:", error);
-        //         alert("Erro ao enviar a requisição.");
-        //     }
-        // }
-
-        const avaliacoesTemporarias = {};
-
-        function avaliarPost(postId, tipo) {
-            // Inicializa os contadores se não existirem
-            if (!avaliacoesTemporarias[postId]) {
-                avaliacoesTemporarias[postId] = {
-                    likes: parseInt(document.getElementById(`likes-${postId}`).textContent) || 0,
-                    dislikes: parseInt(document.getElementById(`dislikes-${postId}`).textContent) || 0
-                };
-            }
-
-            // Atualiza os contadores conforme o tipo
-            if (tipo === 'positivo') {
-                avaliacoesTemporarias[postId].likes += 1;
-                // Remove dislike se estiver ativo (opcional)
-                if (document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`).classList.contains('ativo')) {
-                    avaliacoesTemporarias[postId].dislikes -= 1;
+                    // Adiciona classe ativa conforme o voto atual
+                    if (result.user_vote === 'positivo') {
+                        btnPositivo.classList.add('ativo');
+                    } else if (result.user_vote === 'negativo') {
+                        btnNegativo.classList.add('ativo');
+                    }
+                } else {
+                    alert(result.erro || "Erro ao avaliar post");
                 }
-            } else if (tipo === 'negativo') {
-                avaliacoesTemporarias[postId].dislikes += 1;
-                // Remove like se estiver ativo (opcional)
-                if (document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`).classList.contains('ativo')) {
-                    avaliacoesTemporarias[postId].likes -= 1;
-                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao avaliar post");
             }
-
-            // Atualiza a exibição
-            document.getElementById(`likes-${postId}`).textContent = avaliacoesTemporarias[postId].likes;
-            document.getElementById(`dislikes-${postId}`).textContent = avaliacoesTemporarias[postId].dislikes;
-
-            // Atualiza estado visual dos botões (opcional)
-            const btnPositivo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'positivo')"]`);
-            const btnNegativo = document.querySelector(`button[onclick="avaliarPost(${postId}, 'negativo')"]`);
-
-            if (tipo === 'positivo') {
-                btnPositivo.classList.toggle('ativo');
-                btnNegativo.classList.remove('ativo');
-            } else {
-                btnNegativo.classList.toggle('ativo');
-                btnPositivo.classList.remove('ativo');
-            }
-
-            console.log(`Post ${postId} avaliado:`, avaliacoesTemporarias[postId]);
         }
 
     </script>

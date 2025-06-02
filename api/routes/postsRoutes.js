@@ -1,7 +1,8 @@
 import express from "express";
 import uploadMiddleware from "../middlewares/uploadMiddleware.js";
-import { criarPostagem } from "../controllers/PostController.js";
-import { adicionarOuAtualizarAvaliacao } from '../controllers/postController.js';
+import { criarPostagem, adicionarOuAtualizarAvaliacao } from "../controllers/PostController.js";
+
+console.log('Rotas de postagens carregadas');
 const router = express.Router();
 
 

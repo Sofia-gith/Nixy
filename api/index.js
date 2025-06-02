@@ -15,6 +15,7 @@ import comunidadeRoutes from './routes/comunidade.js';
 import uploadMiddleware from "./middlewares/uploadMiddleware.js";
 
 
+
 const app = express();
 
 
@@ -56,7 +57,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
 app.get('/usuario', async (req, res) => {
   const usuarioLogado = req.session.user;
 
@@ -185,7 +185,7 @@ app.get("/estatisticas", async (req, res) => {
   if (!user) return res.redirect("/login");
 
   try {
-  
+
     const [[{ totalSegundos }]] = await db.query(
       `SELECT COALESCE(SUM(SEGUNDOS_GASTOS), 0) AS totalSegundos
        FROM pomodoro_t01
@@ -194,7 +194,7 @@ app.get("/estatisticas", async (req, res) => {
     );
     const progressoHoras = (totalSegundos / 3600).toFixed(1);
 
-  
+
     const [diasEstudadosRows] = await db.query(
       `SELECT DATA_ESTUDO FROM dias_estudados_t01 WHERE ID_USUARIO_T01 = ?`,
       [user.ID_USUARIO_T01]
@@ -203,14 +203,14 @@ app.get("/estatisticas", async (req, res) => {
     const diasEstudadosUsuario = diasEstudadosRows.map(row => new Date(row.DATA_ESTUDO));
 
     const agora = new Date();
-    const mesAtual = agora.getMonth();      
-    const anoAtual = agora.getFullYear();   
+    const mesAtual = agora.getMonth();
+    const anoAtual = agora.getFullYear();
 
     const diasEstudadosMesAtual = diasEstudadosUsuario.filter(data => {
       return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
     }).length;
 
-   
+
     const diasEstudadosPorMes = Array(12).fill(0);
     diasEstudadosUsuario.forEach(data => {
       if (data.getFullYear() === anoAtual) {
@@ -221,8 +221,8 @@ app.get("/estatisticas", async (req, res) => {
     res.render('estatisticas', {
       user,
       mostrarMenu: true,
-      diasEstudados: diasEstudadosPorMes, 
-      diasEstudadosMesAtual,              
+      diasEstudados: diasEstudadosPorMes,
+      diasEstudadosMesAtual,
       horasEstudadas: progressoHoras,
       posts: 0,
       progressoHoras,
@@ -318,7 +318,7 @@ app.get('/landingPage', (req, res) => {
 async function buscarPosts(req) {
   try {
     const userId = req.session.user?.ID_USUARIO_T01 || 0;
-    
+
     const [rows] = await db.query(`
       SELECT 
         p.ID_POST_T05 as id,
@@ -330,7 +330,8 @@ async function buscarPosts(req) {
         p.DATA_CRIACAO_POST_T05 as data,
         COALESCE(SUM(CASE WHEN a.TIPO_AVALIACAO_T08 = 'positivo' THEN 1 ELSE 0 END), 0) as likes,
         COALESCE(SUM(CASE WHEN a.TIPO_AVALIACAO_T08 = 'negativo' THEN 1 ELSE 0 END), 0) as dislikes,
-        (SELECT COUNT(*) FROM AVALIACAO_T08 WHERE ID_POST_T05 = p.ID_POST_T05 AND ID_USUARIO_T01 = ?) as user_vote
+        (SELECT TIPO_AVALIACAO_T08 FROM AVALIACAO_T08 
+         WHERE ID_POST_T05 = p.ID_POST_T05 AND ID_USUARIO_T01 = ? LIMIT 1) as user_vote
       FROM POST_T05 p
       JOIN USUARIO_T01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
       LEFT JOIN AVALIACAO_T08 a ON p.ID_POST_T05 = a.ID_POST_T05
@@ -359,23 +360,25 @@ async function buscarComunidades() {
   }
 }
 
-app.post('/postagens', uploadMiddleware, (req, res, next) => {
-    // Adicione o resultado do Cloudinary ao body
-    if (req.cloudinaryResult) {
-        req.body.arquivo = req.cloudinaryResult.secure_url;
-    }
-    next();
+app.use('/postagens', postagemRoutes);
+
+app.post('api/postagens', uploadMiddleware, (req, res, next) => {
+  // Adicione o resultado do Cloudinary ao body
+  if (req.cloudinaryResult) {
+    req.body.arquivo = req.cloudinaryResult.secure_url;
+  }
+  next();
 }, postagemRoutes);
 
-app.get("/forum", async (req, res) => {
+app.get("/Forum", async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
 
   try {
     const posts = await buscarPosts(req);
-    
-    
+
+
     const [comunidades] = await db.query(`
       SELECT 
         c.ID_COMUNIDADE_T14,
@@ -388,7 +391,7 @@ app.get("/forum", async (req, res) => {
       ORDER BY total_membros DESC
     `);
 
-    res.render("forum", {
+    res.render("Forum", {
       user: req.session.user,
       posts,
       comunidades,
@@ -399,6 +402,9 @@ app.get("/forum", async (req, res) => {
     res.status(500).send("Erro ao carregar o fórum");
   }
 });
+
+
+app.use('/api/posts', postRoutes);
 
 
 app.use(routes);
