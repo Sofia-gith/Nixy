@@ -410,8 +410,72 @@ app.use('/api/posts', postRoutes);
 app.use(routes);
 
 
+app.get("/post", async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const posts = await buscarPosts(req);
 
 
+    const [comunidades] = await db.query(`
+      SELECT 
+        c.ID_COMUNIDADE_T14,
+        c.NOME_COMUNIDADE_T14,
+        c.DESCRICAO_COMUNIDADE_T14,
+        COUNT(uc.ID_USUARIO_T01) as total_membros
+      FROM comunidade_t14 c
+      LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
+      GROUP BY c.ID_COMUNIDADE_T14
+      ORDER BY total_membros DESC
+    `);
+
+    res.render("post", {
+      user: req.session.user,
+      posts,
+      comunidades,
+      mostrarMenu: true
+    });
+  } catch (err) {
+    console.error("Erro ao carregar fórum:", err);
+    res.status(500).send("Erro ao carregar o fórum");
+  }
+});
+
+
+app.get("/comunidade", async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const posts = await buscarPosts(req);
+
+
+    const [comunidades] = await db.query(`
+      SELECT 
+        c.ID_COMUNIDADE_T14,
+        c.NOME_COMUNIDADE_T14,
+        c.DESCRICAO_COMUNIDADE_T14,
+        COUNT(uc.ID_USUARIO_T01) as total_membros
+      FROM comunidade_t14 c
+      LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
+      GROUP BY c.ID_COMUNIDADE_T14
+      ORDER BY total_membros DESC
+    `);
+
+    res.render("comunidade", {
+      user: req.session.user,
+      posts,
+      comunidades,
+      mostrarMenu: true
+    });
+  } catch (err) {
+    console.error("Erro ao carregar fórum:", err);
+    res.status(500).send("Erro ao carregar o fórum");
+  }
+});
 
 
 // Adicionando as rotas de postagem

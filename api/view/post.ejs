@@ -1,6 +1,7 @@
-<%- include('partials/header', { title: 'Página Inicial' }) %>
+<%- include('partials/header', { title: 'Página do Post' }) %>
 
     <div class="AlinhaForum">
+        <!-- Menu lateral -->
         <aside class="menuLateral">
             <h3>Comunidades Populares</h3>
             <hr />
@@ -24,7 +25,83 @@
                 + Nova Comunidade
             </button>
         </aside>
-teste teste teste
-    </body>
 
-    </html>
+        <!-- Conteúdo principal -->
+        <main class="conteudoPrincipal">
+
+            <div class="barraPesquisa">
+                <span class="search-icon"><img src="/imagens/procurar.png" alt="Buscar"></span>
+                <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ fórum/ etc" />
+                <button>Buscar</button>
+            </div>
+
+            <h2 class="tituloPost">Título do Post</h2>
+            <!-- Post completo -->
+            <div class="postCompleto">
+
+
+                <div class="conteudoPost">
+                    <p>
+                        conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo
+                        conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo
+                        conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo conteúdo
+                    </p>
+                </div>
+            </div>
+            <div class="acoesPost">
+                <button><img class="avaliarBtn" src="/imagens/gostar.png" alt=""></button>
+                <button><img class="avaliarBtn" src="/imagens/nao-gosto.png" alt=""></button>
+            </div>
+
+
+            <div class="comentarioBox">
+                <div class="comentarioInputArea">
+                    <textarea placeholder="Escreva um comentário..."></textarea>
+                    <div class="comentarioAcoesEsquerda">
+                        <button><i class="fas fa-image"></i></button>
+                        <button><i class="fas fa-file"></i></button>
+                        <button><i class="fas fa-font"></i></button>
+                    </div>
+                    <div class="comentarioAcoesDireita">
+                        <button class="cancelarBtn">Cancel</button>
+                        <button class="comentarBtn">Comment</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comentários -->
+            <div class="secaoComentarios">
+                <div class="comentario">
+                    <div class="avatar pequeno"></div>
+                    <div>
+                        <strong>nome do usuário</strong>
+                        <p>
+                            conteúdo do comentário conteúdo do comentário conteúdo do comentário conteúdo do comentário
+                            conteúdo do comentário conteúdo do comentário conteúdo do comentário
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="comentario">
+                    <div class="avatar pequeno"></div>
+                    <div>
+                        <strong>outro usuário</strong>
+                        <p>
+                            outro comentário outro comentário outro comentário outro comentário
+                            outro comentário outro comentário
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <aside class="infoForum">
+            <h4>Nome do fórum</h4>
+            <p>Descrição do fórum</p>
+            <hr />
+            <div class="autorPost">
+                <div class="avatar"></div>
+                <span>Nome do usuário</span>
+            </div>
+        </aside>
+    </div>

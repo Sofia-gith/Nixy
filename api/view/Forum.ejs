@@ -86,93 +86,96 @@
         </div>
 
         <main class="PrincipalForum">
+
             <div class="barraPesquisa">
                 <span class="search-icon"><img src="../imagens/procurar.png" alt=""></span>
                 <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ comunidade/ etc" />
                 <button onclick="pesquisarPosts()">Buscar</button>
             </div>
 
-            <div id="posts-container">
-                <% if (posts && posts.length> 0) { %>
-                    <% posts.forEach(post=> { %>
-                        <div class="post" data-post-id="<%= post.id %>">
-                            <div class="forum-info">
-                                <div class="avatar"></div>
-                                <span>
-                                    <% if (post.comunidade_nome) { %>
-                                        c/<%= post.comunidade_nome %>
-                                            <% } else { %>
-                                                Geral
-                                                <% } %>
-                                </span>
-                                <span class="autor">• por <%= post.autor %></span>
-                                <span class="data">• <%= new Date(post.data).toLocaleDateString('pt-BR') %></span>
-                            </div>
+            <a href="\post" class="redirecionarPost">
+                <div id="posts-container">
+                    <% if (posts && posts.length> 0) { %>
+                        <% posts.forEach(post=> { %>
+                            <div class="post" data-post-id="<%= post.id %>">
+                                <div class="forum-info">
+                                    <div class="avatar"></div>
+                                    <span>
+                                        <% if (post.comunidade_nome) { %>
+                                            c/<%= post.comunidade_nome %>
+                                                <% } else { %>
+                                                    Geral
+                                                    <% } %>
+                                    </span>
+                                    <span class="autor">• por <%= post.autor %></span>
+                                    <span class="data">• <%= new Date(post.data).toLocaleDateString('pt-BR') %></span>
+                                </div>
 
-                            <h2>
-                                <%= post.titulo %>
-                            </h2>
+                                <h2>
+                                    <%= post.titulo %>
+                                </h2>
 
-                            <div class="ConteudoPost">
-                                <%= post.conteudo %>
+                                <div class="ConteudoPost">
+                                    <%= post.conteudo %>
 
-                                    <% if (post.arquivo) { %>
-                                        <div class="arquivo-post">
-                                            <a href="<%= post.arquivo %>" target="_blank">
-                                                📎 Ver anexo
-                                            </a>
-                                        </div>
-                                        <% } %>
-                            </div>
-
-                            <!-- Sistema de avaliação -->
-                            <div class="interacoes-post">
-                                <div class="avaliacoes">
-                                    <button class="btn-avaliacao positivo"
-                                        onclick="avaliarPost(<%= post.id %>, 'positivo')">
-                                        <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
+                                        <% if (post.arquivo) { %>
+                                            <div class="arquivo-post">
+                                                <a href="<%= post.arquivo %>" target="_blank">
+                                                    📎 Ver anexo
+                                                </a>
+                                            </div>
+                                            <% } %>
+                                </div>
+</a>
+                                <!-- Sistema de avaliação -->
+                                <div class="interacoes-post">
+                                    <div class="avaliacoes">
+                                        <button class="btn-avaliacao positivo"
+                                            onclick="avaliarPost(<%= post.id %>, 'positivo')">
+                                            <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
                                         <span id="likes-<%= post.id %>">
-                                            <%= post.likes || 0 %>
-                                        </span>
-                                    </button>
+                                                <%= post.likes || 0 %>
+                                            </span>
+                                        </button>
 
-                                    <button class="btn-avaliacao negativo"
-                                        onclick="avaliarPost(<%= post.id %>, 'negativo')">
-                                        <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
-                                        <span id="dislikes-<%= post.id %>">
-                                            <%= post.dislikes || 0 %>
-                                        </span>
-                                    </button>
+                                        <button class="btn-avaliacao negativo"
+                                            onclick="avaliarPost(<%= post.id %>, 'negativo')">
+                                            <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
+                                            <span id="dislikes-<%= post.id %>">
+                                                <%= post.dislikes || 0 %>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    <div class="comentarios">
+                                        <button class="btn-comentarios" onclick="verComentarios(<%= post.id %>)">
+                                            <img src="/imagens/comente.png" alt=""> Comentários
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="comentarios">
-                                    <button class="btn-comentarios" onclick="verComentarios(<%= post.id %>)">
-                                        <img src="/imagens/comente.png" alt=""> Comentários
-                                    </button>
-                                </div>
+                                <% if (post.forum && post.forum.length> 0) { %>
+                                    <div class="tags">
+                                        <% post.forum.split(',').forEach(tag=> { %>
+                                            <span class="tag">
+                                                <%= tag.trim() %>
+                                            </span>
+                                            <% }) %>
+                                    </div>
+                                    <% } %>
                             </div>
+                            <% }) %>
+                                <% } else { %>
+                                    <div class="nenhum-post">
+                                        <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
+                                    </div>
+                                    <% } %>
+            
+    </div>
 
-                            <% if (post.forum && post.forum.length> 0) { %>
-                                <div class="tags">
-                                    <% post.forum.split(',').forEach(tag=> { %>
-                                        <span class="tag">
-                                            <%= tag.trim() %>
-                                        </span>
-                                        <% }) %>
-                                </div>
-                                <% } %>
-                        </div>
-                        <% }) %>
-                            <% } else { %>
-                                <div class="nenhum-post">
-                                    <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
-                                </div>
-                                <% } %>
-            </div>
-
-            <!-- Botão flutuante -->
-            <button class="botao-add" onclick="mostrarFormulario()">+</button>
-        </main>
+    <!-- Botão flutuante -->
+    <button class="botao-add" onclick="mostrarFormulario()">+</button>
+    </main>
     </div>
 
     <script>
