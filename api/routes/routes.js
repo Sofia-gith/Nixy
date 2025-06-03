@@ -9,7 +9,8 @@ routes.post("/upload-foto", upload.single("foto"), (req, res) => {
 
 import { uploadFotoPerfil } from "../controllers/UserController.js";
 
-routes.post("/upload-foto/:id", upload.single("foto"), uploadFotoPerfil)
+routes.post("/upload-foto/:id", upload.single("foto"), uploadFotoPerfil);
+
 
 
 import { getUsers, createUser, updateUser, deleteUser, login } from "../controllers/UserController.js";

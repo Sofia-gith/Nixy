@@ -14,7 +14,14 @@ export const uploadFotoPerfil = async (req, res) => {
             return res.status(400).send("Nenhuma imagem foi enviada.");
         }
 
+        // Atualiza no banco de dados
         await db.query("UPDATE usuario_t01 SET foto_perfil_url = ? WHERE id_usuario_t01 = ?", [imagemURL, userId]);
+
+        // Atualiza na sessão do usuário
+        if (req.session.user) {
+            req.session.user.FOTO_PERFIL_URL = imagemURL;
+            await req.session.save(); // Salva a sessão
+        }
 
         res.redirect("/usuario");
     } catch (err) {
@@ -22,7 +29,6 @@ export const uploadFotoPerfil = async (req, res) => {
         res.status(500).send("Erro ao enviar imagem.");
     }
 };
-
 export default {
     uploadFotoPerfil
 };

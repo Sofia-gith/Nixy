@@ -1186,7 +1186,7 @@ footer {
   background-color: #fff;
   margin: 10% auto;
   padding: 20px;
-  width: 400px;
+  width: 500px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 
@@ -1340,8 +1340,9 @@ footer {
 .avatar {
     width: 40px;
     height: 40px;
-    background-color: #ccc;
     border-radius: 50%;
+    background-size: cover;
+    background-position: center;
 }
 .tituloPost {
     font-size: 1.8em;

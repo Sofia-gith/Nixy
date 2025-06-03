@@ -47,6 +47,8 @@ export const getTodasPostagens = (req, res) => {
             p.CATEGORIA_POST_T05 as forum,
             p.ARQUIVO_POST_T05 as arquivo,
             u.NOME_USUARIO_T01 as autor,
+            u.ID_USUARIO_T01 as autor_id,  
+            u.FOTO_PERFIL_URL as autor_foto,
             p.DATA_CRIACAO_POST_T05 as data,
             SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'positivo' THEN 1 ELSE 0 END) AS likes,
             SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'negativo' THEN 1 ELSE 0 END) AS dislikes,
