@@ -1,5 +1,5 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
-<div class="layout-comunidade">
+    <div class="layout-comunidade">
 
         <aside class="menuLateral">
             <h3>Comunidades Populares</h3>
@@ -8,7 +8,8 @@
                 <% if (comunidades && comunidades.length> 0) { %>
                     <% comunidades.forEach(com=> { %>
                         <li>
-                            <a href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
+                            <a class="nomeComunidade" href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
+                                <div class="avatar_comunidade"></div>
                                 <%= com.NOME_COMUNIDADE_T14 %>
                             </a>
                             <small>(<%= com.total_membros || 0 %> membros)</small>
@@ -27,32 +28,39 @@
 
         <main>
             <div class="container-comunidade">
-
                 <!-- Barra de Pesquisa -->
                 <div class="barraPesquisa">
                     <span class="search-icon"><img src="/imagens/procurar.png" alt="Buscar"></span>
                     <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ fórum/ etc" />
                     <button>Buscar</button>
                 </div>
-                <!-- Banner da Comunidade -->
-                <div class="banner-comunidade">
-                    <span class="texto-banner">Aqui poderá uppar uma imagem</span>
-                    <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
+
+                <!-- Banner da Comunidade com cabeçalho sobreposto -->
+                <div class="banner-container">
+                    <div class="banner-comunidade">
+                        <span class="texto-banner">Aqui poderá uppar uma imagem</span>
+                        <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
+                        <!-- Cabeçalho sobre o banner -->
+                        <div class="cabecalho-comunidade">
+                            <div class="avatar"></div>
+                            <h2 class="nome-comunidade">
+                                <%= comunidade.NOME_COMUNIDADE_T14 %>
+                            </h2>
+                        </div>
+                    </div>
+
+
                 </div>
 
-                <!-- Nome da Comunidade -->
-                <div class="cabecalho-comunidade">
-                    <div class="avatar"></div>
-                    <h2 class="nome-comunidade">
-                        <%= comunidade.NOME_COMUNIDADE_T14 %>
-                    </h2>
-                </div>
 
                 <!-- Posts -->
                 <% posts.forEach(post=> { %>
                     <div class="post">
                         <div class="info-usuario">
-                            <div class="avatar-usuario"></div>
+                            <div class="avatar"
+                                style="background-image: url('<%= post.autor_foto ? `${post.autor_foto}?v=${Date.now()}` : '/img/default.png' %>');"
+                                data-user-id="<%= post.autor_id %>">
+                            </div>
                             <span class="nome-usuario">
                                 <%= post.nomeUsuario %>
                             </span>
@@ -62,14 +70,26 @@
                         </h3>
                         <div class="conteudo-post">
                             <p>
-                                <%= post.conteudo %>
+                                <%- post.conteudo %>
                             </p>
                         </div>
-                        <div class="acoes-post">
-                            <button>👍</button>
-                            <button>👎</button>
-                            <button>💬</button>
-                            <button>🔁</button>
+                        <div class="acoesPost">
+
+                            <button class="btn-avaliacao-positivo">
+                                <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
+                                <span id="likes">
+                                    <%= post.likes || 0 %>
+                                </span>
+                            </button>
+
+
+                            <button class="btn-avaliacao-negativo">
+                                <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
+                                <span id="dislikes">
+                                    <%= post.dislikes || 0 %>
+                                </span>
+                            </button>
+
                         </div>
                     </div>
                     <% }) %>
@@ -79,8 +99,8 @@
 
             </div>
         </main>
-</div>
-    
+    </div>
+
 
 
     </body>
