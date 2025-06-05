@@ -412,14 +412,63 @@ app.use('/api/posts', postRoutes);
 app.use(routes);
 
 
-app.get("/post", async (req, res) => {
+// app.get("/post", async (req, res) => {
+//   if (!req.session.user) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     const posts = await buscarPosts(req);
+
+
+//     const [comunidades] = await db.query(`
+//       SELECT 
+//         c.ID_COMUNIDADE_T14,
+//         c.NOME_COMUNIDADE_T14,
+//         c.DESCRICAO_COMUNIDADE_T14,
+//         COUNT(uc.ID_USUARIO_T01) as total_membros
+//       FROM comunidade_t14 c
+//       LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
+//       GROUP BY c.ID_COMUNIDADE_T14
+//       ORDER BY total_membros DESC
+//     `);
+
+//     res.render("post", {
+//       user: req.session.user,
+//       posts,
+//       comunidades,
+//       mostrarMenu: true
+//     });
+//   } catch (err) {
+//     console.error("Erro ao carregar fórum:", err);
+//     res.status(500).send("Erro ao carregar o fórum");
+//   }
+// });
+
+app.get("/post/:id", async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
 
   try {
-    const posts = await buscarPosts(req);
-
+    const postId = req.params.id;
+    
+    const [post] = await db.query(`
+      SELECT 
+        p.ID_POST_T05 as id,
+        p.TITULO_POST_T05 as titulo,
+        p.CONTEUDO_POST_T05 as conteudo,
+        p.DATAPUBLICACAO_POST_T05 as data,
+        p.ARQUIVO_POST_T05 as arquivo,
+        p.CATEGORIA_POST_T05 as forum,
+        p.VIEWS_POST_T05 as views,
+        u.ID_USUARIO_T01 as autor_id,
+        u.NOME_USUARIO_T01 as autor,
+        u.FOTO_PERFIL_URL as autor_foto
+      FROM post_t05 p
+      LEFT JOIN usuario_t01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
+      WHERE p.ID_POST_T05 = ?
+    `, [postId]);
 
     const [comunidades] = await db.query(`
       SELECT 
@@ -433,18 +482,35 @@ app.get("/post", async (req, res) => {
       ORDER BY total_membros DESC
     `);
 
+    if (!post || post.length === 0) {
+      return res.render("post", {
+        user: req.session.user,
+        post: null,
+        comunidades,
+        mostrarMenu: true,
+        error: 'Post não encontrado'
+      });
+    }
+
     res.render("post", {
       user: req.session.user,
-      posts,
+      post: post[0],
       comunidades,
-      mostrarMenu: true
+      mostrarMenu: true,
+      error: null // Garante que a variável error existe mesmo quando não há erro
     });
+    
   } catch (err) {
-    console.error("Erro ao carregar fórum:", err);
-    res.status(500).send("Erro ao carregar o fórum");
+    console.error("Erro ao carregar post:", err);
+    res.render("post", {
+      user: req.session.user,
+      post: null,
+      comunidades: [],
+      mostrarMenu: true,
+      error: 'Erro ao carregar o post'
+    });
   }
 });
-
 
 app.get("/comunidade", async (req, res) => {
   if (!req.session.user) {

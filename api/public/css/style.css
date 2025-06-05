@@ -1145,11 +1145,6 @@ footer {
   border-radius: 5px;
 }
 
-#likes {
-  background-color: #D6A4EF;
-  width: 30%;
-  height: 10%;
-}
 
 .add-button {
   position: absolute;
@@ -1275,6 +1270,14 @@ footer {
     cursor: pointer;
     margin-right: 10px;
 }
+.btn-avaliacao-positivo:hover{
+  background-color: #F2D1EF;
+  border-radius: 10px;
+}
+.btn-avaliacao-negativo:hover{
+  background-color: #F2D1EF;
+  border-radius: 10px;
+}
 
 .comentarioBox {
     width: 100%;
@@ -1353,4 +1356,96 @@ footer {
 .avatar.pequeno {
     width: 30px;
     height: 30px;
+}
+
+
+.error-message {
+    background-color: #ffebee;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.error-message h2 {
+    color: #c62828;
+    margin-bottom: 15px;
+}
+
+.error-message a {
+    color: #1565c0;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.comentarioBox {
+    width: 100%;
+    max-width: 700px;
+    margin-top: 30px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.comentarioInputArea {
+    flex: 1 1 100%;
+}
+
+.comentarioInputArea textarea {
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 8px 0;
+    background-color: transparent;
+    height: 28px;
+    transition: height 0.2s ease;
+}
+
+.comentarioExtras,
+.comentarioAcoesDireita {
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.comentarioAcoesDireita {
+    margin-left: auto;
+}
+
+.cancelarBtn {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.comentarBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Quando a classe 'ativo' for aplicada */
+.comentarioBox.ativo .comentarioExtras,
+.comentarioBox.ativo .comentarioAcoesDireita {
+    display: flex;
+}
+
+.comentarioBox.ativo textarea {
+    height: 60px;
 }
