@@ -1449,3 +1449,97 @@ footer {
 .comentarioBox.ativo textarea {
     height: 60px;
 }
+
+
+/* a comunidade. ejs sera feita aqui */
+
+.container-comunidade {
+    padding: 2rem;
+    background: #e7e7f0;
+    font-family: 'Inter', sans-serif;
+    max-width: 100%; 
+}
+
+.banner-comunidade {
+    background: #cdd1f9;
+    border-radius: 10px;
+    padding: 2rem;
+    position: relative;
+    text-align: center;
+    color: #888;
+    margin-bottom: 1rem;
+    width: 100%;
+   
+}
+
+.btn-upload {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.cabecalho-comunidade {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.nome-comunidade {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.info-usuario {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.avatar-usuario {
+    width: 20px;
+    height: 20px;
+    background: #ddd;
+    border-radius: 50%;
+}
+
+.nome-usuario {
+    font-size: 0.9rem;
+}
+
+.titulo-post {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.conteudo-post {
+    background: #bcc4f1;
+    padding: 1rem;
+    border-radius: 10px;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.acoes-post {
+    display: flex;
+    gap: 1rem;
+    padding-left: 0.5rem;
+}
+
+.layout-comunidade {
+       display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+    box-sizing: border-box;
+}

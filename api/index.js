@@ -411,40 +411,6 @@ app.use('/api/posts', postRoutes);
 
 app.use(routes);
 
-
-// app.get("/post", async (req, res) => {
-//   if (!req.session.user) {
-//     return res.redirect("/login");
-//   }
-
-//   try {
-//     const posts = await buscarPosts(req);
-
-
-//     const [comunidades] = await db.query(`
-//       SELECT 
-//         c.ID_COMUNIDADE_T14,
-//         c.NOME_COMUNIDADE_T14,
-//         c.DESCRICAO_COMUNIDADE_T14,
-//         COUNT(uc.ID_USUARIO_T01) as total_membros
-//       FROM comunidade_t14 c
-//       LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
-//       GROUP BY c.ID_COMUNIDADE_T14
-//       ORDER BY total_membros DESC
-//     `);
-
-//     res.render("post", {
-//       user: req.session.user,
-//       posts,
-//       comunidades,
-//       mostrarMenu: true
-//     });
-//   } catch (err) {
-//     console.error("Erro ao carregar fórum:", err);
-//     res.status(500).send("Erro ao carregar o fórum");
-//   }
-// });
-
 app.get("/post/:id", async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
@@ -512,16 +478,18 @@ app.get("/post/:id", async (req, res) => {
   }
 });
 
-app.get("/comunidade", async (req, res) => {
+app.get("/comunidade/:id", async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
 
+  const comunidadeId = req.params.id;
+
   try {
     const posts = await buscarPosts(req);
 
-
-    const [comunidades] = await db.query(`
+    // Buscar comunidade específica pelo ID
+    const [comunidadeRows] = await db.query(`
       SELECT 
         c.ID_COMUNIDADE_T14,
         c.NOME_COMUNIDADE_T14,
@@ -529,21 +497,36 @@ app.get("/comunidade", async (req, res) => {
         COUNT(uc.ID_USUARIO_T01) as total_membros
       FROM comunidade_t14 c
       LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
+      WHERE c.ID_COMUNIDADE_T14 = ?
       GROUP BY c.ID_COMUNIDADE_T14
-      ORDER BY total_membros DESC
+    `, [comunidadeId]);
+
+    if (comunidadeRows.length === 0) {
+      return res.status(404).send("Comunidade não encontrada");
+    }
+
+    const comunidade = comunidadeRows[0];
+
+    // 🔍 Buscar todas as comunidades para a barra lateral
+    const [comunidadesRows] = await db.query(`
+      SELECT ID_COMUNIDADE_T14, NOME_COMUNIDADE_T14
+      FROM comunidade_t14
     `);
 
     res.render("comunidade", {
       user: req.session.user,
       posts,
-      comunidades,
+      comunidade,
+      comunidades: comunidadesRows, // ✅ Adicionado aqui
       mostrarMenu: true
     });
+
   } catch (err) {
-    console.error("Erro ao carregar fórum:", err);
-    res.status(500).send("Erro ao carregar o fórum");
+    console.error("Erro ao carregar comunidade:", err);
+    res.status(500).send("Erro ao carregar a comunidade");
   }
 });
+
 
 
 

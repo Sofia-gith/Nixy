@@ -118,6 +118,8 @@ export const atualizarPostagem = (req, res) => {
         });
 };
 
+
+
 // Função para deletar uma postagem
 export const deletarPostagem = (req, res) => {
     const id = req.params.id;

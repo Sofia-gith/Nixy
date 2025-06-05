@@ -1,6 +1,6 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
+<div class="layout-comunidade">
 
-    <div class="AlinhaForum">
         <aside class="menuLateral">
             <h3>Comunidades Populares</h3>
             <hr />
@@ -25,18 +25,64 @@
             </button>
         </aside>
 
-         <main>
+        <main>
+            <div class="container-comunidade">
 
-            <div class="barraPesquisa">
-                <span class="search-icon"><img src="../imagens/procurar.png" alt=""></span>
-                <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ comunidade/ etc" />
-                <button onclick="pesquisarPosts()">Buscar</button>
+                <!-- Barra de Pesquisa -->
+                <div class="barraPesquisa">
+                    <span class="search-icon"><img src="/imagens/procurar.png" alt="Buscar"></span>
+                    <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ fórum/ etc" />
+                    <button>Buscar</button>
+                </div>
+                <!-- Banner da Comunidade -->
+                <div class="banner-comunidade">
+                    <span class="texto-banner">Aqui poderá uppar uma imagem</span>
+                    <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
+                </div>
+
+                <!-- Nome da Comunidade -->
+                <div class="cabecalho-comunidade">
+                    <div class="avatar"></div>
+                    <h2 class="nome-comunidade">
+                        <%= comunidade.NOME_COMUNIDADE_T14 %>
+                    </h2>
+                </div>
+
+                <!-- Posts -->
+                <% posts.forEach(post=> { %>
+                    <div class="post">
+                        <div class="info-usuario">
+                            <div class="avatar-usuario"></div>
+                            <span class="nome-usuario">
+                                <%= post.nomeUsuario %>
+                            </span>
+                        </div>
+                        <h3 class="titulo-post">
+                            <%= post.titulo %>
+                        </h3>
+                        <div class="conteudo-post">
+                            <p>
+                                <%= post.conteudo %>
+                            </p>
+                        </div>
+                        <div class="acoes-post">
+                            <button>👍</button>
+                            <button>👎</button>
+                            <button>💬</button>
+                            <button>🔁</button>
+                        </div>
+                    </div>
+                    <% }) %>
+
+                        <!-- Botão Flutuante para Criar Post -->
+                        <button class="botao-flutuante">＋</button>
+
             </div>
-
         </main>
-                        
-        
-        Aqui é comunidade
+</div>
+    
+
+
     </body>
 
     </html>
