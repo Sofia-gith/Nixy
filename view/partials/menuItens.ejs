@@ -1,0 +1,26 @@
+<aside class="sidebar">
+    <div class="usuario">
+        <a href="/usuario">
+            <div class="usuario_avatar"
+                style="background-image: url('<%= user && user.FOTO_PERFIL_URL ? `${user.FOTO_PERFIL_URL}?v=${Date.now()}` : '/img/default.png' %>');">
+            </div>
+
+
+            <% if (user) { %>
+                <p>Bem-vindo, <%= user.NOME_USUARIO_T01 %>!</p>
+                <% } else { %>
+                    <p>Usuário não logado.</p>
+                    <% } %>
+        </a>
+    </div>
+
+    <ul class="menuInicio">
+        <% menuItems.forEach(function(item) { %>
+            <li class="<%= item.active ? 'active' : '' %>">
+                <a href="<%= item.link %>">
+                    <%= item.nome %>
+                </a>
+            </li>
+            <% }); %>
+    </ul>
+</aside>

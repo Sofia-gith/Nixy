@@ -1,0 +1,1704 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+
+}
+
+/* header */
+
+.cabecalho {
+  width: 100%;
+  height: 100px;
+  background-color: #1C1746;
+  display: flex;
+  align-items: left;
+  font-weight: 200;
+  font-style: normal;
+
+}
+
+.LogoPrincipal {
+  margin-left: 8%;
+}
+
+.cabecalhoLogo {
+  width: 110px;
+
+}
+
+.NixyCabecalho {
+
+  font-family: "Inspiration", cursive;
+  font-weight: 400;
+  font-style: normal;
+  color: #81BBE7;
+  font-size: 70px;
+
+}
+
+.menu {
+  display: flex;
+  margin-left: 5%;
+  margin-top: 2%;
+  list-style-type: none;
+}
+
+.menu li {
+  font-size: 30px;
+
+}
+
+.menu li a {
+  color: white;
+  padding: 10px 15px;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.menu li a:hover {
+  color: #81BBE7;
+  border-radius: 5px;
+}
+
+/* header2 */
+
+.header2 {
+  width: 100%;
+  height: 50px;
+  background-color: #C5DEF1;
+}
+
+/* usuarios */
+
+.login-coluns-usuarios {
+
+  font-family: Arial, sans-serif;
+  background: #E6E7EB;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.perfil-container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+
+}
+
+.foto-perfil {
+  position: relative;
+  display: inline-block;
+  width: 120px;
+  height: 120px;
+  background-color: #D9D9D9;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+
+.btn-camera {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: white;
+  border: none;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.opcoes {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  font-size: 30px;
+}
+
+.opcoes li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.opcoes li:last-child {
+  border-bottom: none;
+}
+
+.opcoes a {
+  text-decoration: none;
+  color: black;
+
+}
+
+.foto-perfil img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  /* elimina espaçamento extra */
+}
+
+/* menu itens */
+
+.sidebar {
+  width: 250px;
+  background: #f3e5f5;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.usuario {
+  text-align: center;
+  margin-bottom: 30%;
+}
+
+.usuario_avatar {
+  width: 90px;
+  height: 90px;
+  background: #D9D9D9;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0 auto;
+}
+
+
+.menuInicio {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+
+}
+
+.menuInicio li {
+  padding: 10px;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.menuInicio li a {
+  text-decoration: none;
+  color: black;
+  display: block;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.menuInicio li.active a {
+  background: #c084d3;
+  color: white;
+}
+
+/* ainda inicio porem configuração global */
+.alinhaMenu {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.conteudo {
+  background-color: #E1E2EA;
+  width: 100%;
+
+}
+
+
+/* a agenda feita aqui */
+
+.agendaCentraliza {
+  display: flex;
+  flex-direction: column;
+  border-radius: 30px;
+  width: 700px;
+  height: 500px;
+  margin: auto;
+  margin-top: 5%;
+  padding: 5%;
+  border: 2px solid #6C6464;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  /* espaço entre as setas e o título */
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header h2.tituloMes {
+  font-weight: 300;
+  font-size: 22px;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.mudarE,
+.mudarD {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+  width: 30px;
+}
+
+.weekdays {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: bold;
+  margin-top: 10px;
+  font-weight: 200;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 9%;
+  margin-top: 5%;
+}
+
+.day {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #6C6464;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 30%;
+}
+
+.day-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+.day-content.selected {
+  background-color: #c490e4;
+  color: white;
+}
+
+.day-content.estudado {
+  background-color: #c490e4;
+  color: white;
+  border-radius: 50%;
+}
+
+
+
+/* aqui vou fazer o dashboaard */
+
+.painel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  align-items: center;
+  margin-left: 5%;
+  margin-top: 3%;
+}
+
+.box {
+  background: #fbe6f9;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  min-height: 400px;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.valor {
+  font-size: 32px;
+  font-weight: bold;
+  background-color: #81c8f8;
+  border-radius: 20px;
+  display: inline-block;
+  padding: 8px 20px;
+  color: black;
+  margin-bottom: 10px;
+}
+
+.titulo {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.centraliza {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* aqui eu vou fazera as anotações */
+
+.notas-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+
+}
+
+.nota {
+  background-color: #efccfc;
+  border-radius: 20px;
+  padding: 20px;
+  width: 300px;
+  height: 350px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-left: 4%;
+  margin-top: 5%;
+}
+
+.nota h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.nota ul {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.nota {
+  position: relative;
+  padding-bottom: 30px;
+}
+
+.nota-actions {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+
+}
+
+.nota-actions button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.botao-add {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
+  background-color: #e2a8f8;
+  color: black;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.botao-add:hover {
+  background-color: #e2a8f8;
+}
+
+.form-anotacao {
+  background-color: #C5DADD;
+  border-radius: 10px;
+  padding: 20px;
+  width: 600px;
+  margin: 30px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-anotacao input[type="text"] {
+  border: none;
+  border-bottom: 1px solid #333;
+  background: transparent;
+  font-size: 16px;
+  padding: 5px;
+  outline: none;
+}
+
+.form-anotacao textarea {
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  padding: 10px;
+  height: 150px;
+  resize: none;
+  outline: none;
+}
+
+.form-anotacao .toolbar {
+  display: flex;
+  gap: 15px;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+.form-anotacao .toolbar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.form-anotacao button[type="submit"] {
+  align-self: flex-end;
+  background-color: #b6dce0;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-anotacao button[type="submit"]:hover {
+  background-color: #a0cfd3;
+}
+
+/* aqui o pomodoro */
+
+.pomodoro-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.pomoH {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#timer {
+  font-size: 80px;
+  font-weight: 200;
+  margin: 20px 0;
+
+}
+
+.cycles {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.cycle-dot {
+  width: 25px;
+  height: 25px;
+  border: 2px solid #555;
+  border-radius: 50%;
+}
+
+.logoPomo {
+  font-family: "Inspiration";
+  font-size: 100px;
+  color: #7ab6f5;
+  margin: 30px 0;
+}
+
+.buttonsPomo {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.buttonsPomo button {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  background: none;
+  cursor: pointer;
+}
+
+.buttonsPomo button:hover {
+  background-color: #ddd;
+}
+
+/* aqui a landing page */
+
+.meioLandingPage {
+  width: 100%;
+  height: 600px;
+  background-color: #461B7A;
+
+}
+
+.mensagem {
+  float: left;
+  margin-left: 10%;
+  margin-top: 5%;
+}
+
+.mensagem h1 {
+  color: #81BBE7;
+  margin-bottom: 10%;
+  font-size: 50px;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.mensagem p {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.butao1 {
+  background-color: #81BBE7;
+  border-radius: 10%;
+  width: 30%;
+  height: 55px;
+  cursor: pointer;
+  bottom: bold;
+  font-size: 16px;
+}
+
+.butao2 {
+  background-color: #81BBE7;
+  border-radius: 10%;
+  width: 30%;
+  height: 55px;
+  margin-left: 5%;
+  margin-top: 8%;
+  cursor: pointer;
+  font-size: 16px;
+  border: none;
+}
+
+.quadrados {
+
+  float: right;
+  margin-right: 35%;
+  margin-top: 5%;
+}
+
+.quadrado1 {
+  width: 200px;
+  height: 200px;
+  background-color: #AF70C5;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
+  margin-bottom: 20px;
+  border-radius: 5%;
+}
+
+.quadrado2 {
+  width: 200px;
+  height: 200px;
+  background-color: #AF70C5;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
+  margin-bottom: 20px;
+  border-radius: 5%;
+  margin-left: 110%;
+
+}
+
+
+.AlinharLandingPage {
+  display: flex;
+  width: 80%;
+  max-width: 1000px;
+  background-color: white;
+  padding: 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 20%;
+  margin-top: 10%;
+  margin-bottom: 10%;
+
+}
+
+.AlinharLandingPage h2 {
+  font-size: 30px;
+  margin-bottom: 10px;
+  text-align: left;
+
+}
+
+.comeceEstudar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon {
+  width: 200px;
+  margin-bottom: 15px;
+}
+
+.LPbtn {
+  background-color: #D6A7E3;
+  border: none;
+  padding: 20px 90px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 2%;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.Foruns {
+  text-align: center;
+}
+
+.Foruns h3 {
+  font-size: 40px;
+  font-weight: 400;
+  font-style: normal;
+  color: #81BBE7;
+  margin-bottom: 20px;
+}
+
+.Fgrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10%;
+  justify-items: center;
+
+}
+
+.box {
+  width: 250px;
+  height: 200px;
+  background-color: #E2C6F0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* login */
+
+.chamada {
+  text-align: center;
+  margin-top: 5%;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logo {
+  margin-left: 15%;
+}
+
+.logo2 {
+
+  font-family: "Inspiration";
+  font-weight: 400;
+  font-style: normal;
+  color: #81BBE7;
+  font-size: 130px;
+
+}
+
+h2 {
+  float: right;
+}
+
+.login-coluns {
+  display: flex;
+  justify-content: center;
+}
+
+.login-coluns2 {
+  display: flex;
+  gap: 10px;
+}
+
+.formulario {
+  float: right;
+  height: 500px;
+  width: 700px;
+  margin-top: 5%;
+
+}
+
+.homen {
+  float: left;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.loginRequisito {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.login {
+  border: none;
+  border-bottom: 1px solid #6C6464;
+  padding: 8px;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 10%;
+  width: 90%;
+}
+
+.login:focus {
+  border-bottom: 2px solid #007BFF;
+}
+
+.Enviar {
+  float: right;
+  background-color: #D6A4EF;
+  height: 52px;
+  width: 190px;
+  border-radius: 5%;
+  font-size: 20px;
+  margin-right: 10%;
+  cursor: pointer;
+}
+
+
+/* cadastro */
+
+
+.alinharLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo3 {
+  font-family: "Inspiration", cursive;
+  font-weight: 400;
+  font-style: normal;
+  color: #81BBE7;
+  font-size: 80px;
+}
+
+.centralizar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+}
+
+.imgDireita {
+  margin-top: 20%;
+  width: 25%;
+  max-width: 300px;
+}
+
+.imgE {
+  position: relative;
+  width: 25%;
+  max-width: 300px;
+  margin-right: 50px;
+  margin-bottom: 10%;
+  z-index: -10;
+}
+
+
+.login-box {
+  background-color: #DEDCE9;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  height: 600px;
+  width: 500px;
+  text-align: center;
+  margin-top: 5%;
+
+}
+
+.logoCadastro {
+  width: 90px;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: 0;
+
+}
+
+.h1Cadastro {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: left;
+  width: 100%;
+}
+
+
+.pCadastro {
+  font-size: 14px;
+  color: #444;
+  text-align: left;
+  width: 100%;
+}
+
+.Acadastro {
+  color: #475BE2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.CadastroRequisito {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.formCadastro {
+  width: 95%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 0.5px solid #6C6464;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #DEDCE9;
+  height: 20px;
+}
+
+.forgot-password {
+  text-align: right;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.login-btn {
+  background-color: #D6A4EF;
+  color: black;
+  font-size: 16px;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 40px;
+  font-weight: bold;
+}
+
+.login-btn:hover {
+  background-color: #B286E0;
+}
+
+/* footer */
+
+footer {
+  background-color: #1C1746;
+  height: 500px;
+  color: white;
+  bottom: 0;
+  width: 100%;
+}
+
+.alinharFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footer-section {
+  flex: 20;
+  margin-top: 3%;
+  margin-left: 12%;
+  margin-bottom: 8%;
+}
+
+.footer-section h3 {
+  font-size: 16px;
+  margin-bottom: 3%;
+}
+
+.direitosA {
+  margin-right: 17%;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 5px;
+}
+
+.footer-section ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.linha {
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  margin: 15px 0;
+}
+
+.footer-embaixo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.logo-text {
+  font-family: "Inspiration", cursive;
+  font-weight: 400;
+  font-style: normal;
+  color: #81BBE7;
+  font-size: 70px;
+}
+
+.alinhaIndex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  flex-direction: column;
+
+}
+
+/* ------------------a partir daqui o forum------------------------ */
+.AlinhaForum {
+  display: flex;
+  height: 100vh;
+}
+
+.menuLateral {
+  width: 200px;
+  background-color: #f3e8f7;
+  padding: 20px;
+}
+
+.menuLateral h3 {
+  margin-top: 0;
+}
+
+.menuLateral ul {
+  list-style: none;
+  padding: 0;
+}
+
+.menuLateral li {
+  margin: 10px 0;
+}
+
+.PrincipalForum {
+  flex: 1;
+  padding: 30px;
+  position: relative;
+}
+
+.redirecionarPost{
+    text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.barraPesquisa {
+  display: flex;
+  align-items: center;
+  background-color: #d9ddfc;
+  padding: 10px 20px;
+  border-radius: 25px;
+  width: 60%;
+  margin-bottom: 20px;
+}
+
+.barraPesquisa input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  font-size: 16px;
+  color: #666;
+}
+
+.search-icon {
+  margin-left: 10px;
+}
+
+.post {
+  margin-top: 5%;
+
+}
+
+.interacoes-post {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* espaço entre avaliações e comentários */
+    margin-top: 10px;
+}
+
+.avaliacoes button {
+  background-color: transparent;
+}
+
+.comentarios button {
+  background-color: transparent;
+}
+
+.avaliacoes { 
+  
+  height: 50px;
+  width: 7%;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.avaliacoes:hover { 
+  background-color: #F2D1EF;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.comentarios{
+  height: 50px;
+  width: 5%;
+  cursor: pointer;
+}
+
+.comentarios :hover{
+  background-color: #F2D1EF;
+  border-radius: 20px;
+}
+
+
+.forum-info {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #555;
+}
+
+.avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ddd;
+  margin-right: 8px;
+}
+
+.avatar_comunidade{
+    width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ddd;
+  float: left;
+}
+
+.nomeComunidade{
+    background: none;
+    color: inherit;
+}
+
+.post h2 {
+
+  text-align: left;
+  font-size: 20px;
+  display: block;
+  width: 100%;
+
+}
+
+.ConteudoPost {
+  margin-top: 2%;
+  background-color: #d9ddfc;
+  padding: 20px;
+  width: 80%;
+  border-radius: 5px;
+}
+
+
+.add-button {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  background-color: #e6a8f7;
+  color: black;
+  font-size: 24px;
+  border: none;
+  border-radius: 15px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Conteúdo do Modal */
+.modal {
+
+  text-align: left;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.modal-content input,
+.modal-content textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.modal-content .close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* modal comunidade */
+
+.btn-criar-comunidade {
+  margin-top: 40%;
+  background-color: #D6A4EF;
+  width: 100%;
+  height: 5%;
+  border-radius: 5px;
+  cursor: pointer;
+
+}
+
+.btn-criar-comunidade:hover {
+  background-color: #F2D1EF;
+}
+
+
+
+/* posts do forum */
+
+.conteudoPrincipal {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.postCompleto {
+    display: flex;
+    gap: 30px;
+}
+
+.conteudoPost {
+    background-color: #d5d9f0;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 3;
+}
+
+.infoForum {
+   width: 220px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background-color: #fef0f8;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.acoesPost button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.btn-avaliacao-positivo:hover{
+  background-color: #F2D1EF;
+  border-radius: 10px;
+}
+.btn-avaliacao-negativo:hover{
+  background-color: #F2D1EF;
+  border-radius: 10px;
+}
+
+.comentarioBox {
+    width: 100%;
+    max-width: 700px;
+    margin-top: 20px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.comentarioInputArea {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comentarioInputArea textarea {
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+}
+
+.comentarioAcoesEsquerda {
+    display: flex;
+    gap: 10px;
+    margin-left: 5px;
+    color: #555;
+}
+
+.comentarioAcoesDireita {
+      display: flex; 
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.cancelarBtn, .comentarBtn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancelarBtn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* teste aqui */
+
+.comentarioBox textarea:focus {
+    outline: none;
+    background-color: #f5f5f5 !important;
+}
+
+.secaoComentarios {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.secaoComentarios h3 {
+    margin-bottom: 20px;
+    font-size: 1.3em;
+    color: #333;
+}
+/* Quando o box não está ativo (sem foco) */
+.comentarioBox:not(.ativo) .comentarioAcoesDireita {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+.comentarioBox.ativo {
+    padding: 12px;
+    border-color: #007bff;
+}
+
+.comentarioBox.ativo .comentarioInputArea textarea {
+    min-height: 80px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.comentarBtn {
+    background-color: #007bff;
+    color: white;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+}
+.tituloPost {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+.avatar.pequeno {
+    width: 30px;
+    height: 30px;
+}
+
+
+.error-message {
+    background-color: #ffebee;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.error-message h2 {
+    color: #c62828;
+    margin-bottom: 15px;
+}
+
+.error-message a {
+    color: #1565c0;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.comentarioBox {
+    width: 100%;
+    max-width: 700px;
+    margin-top: 30px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.comentarioInputArea {
+    flex: 1 1 100%;
+}
+
+.comentarioInputArea textarea {
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 8px 0;
+    background-color: transparent;
+    height: 28px;
+    transition: height 0.2s ease;
+}
+
+.comentarioExtras,
+.comentarioAcoesDireita {
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.comentarioAcoesDireita {
+    margin-left: auto;
+}
+
+.cancelarBtn {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.comentarBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+       /* modal dos posts */
+.modalPost {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.modal-conteudo-post {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fechar-modal-post {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.fechar-modal-post:hover {
+    color: #000;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.acoes-modal {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancelar {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-salvar {
+    background-color: #0079d3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-salvar:hover {
+    background-color: #0064b4;
+}
+
+/* Quando a classe 'ativo' for aplicada */
+.comentarioBox.ativo .comentarioExtras,
+.comentarioBox.ativo .comentarioAcoesDireita {
+    display: flex;
+}
+
+.comentarioBox.ativo textarea {
+    height: 60px;
+}
+
+.btn-deletar-post,
+.btn-editar-post {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    gap: 5px;
+    color: #ff6b6b;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    float: right;
+}
+
+
+
+
+.deletarBtn,
+.editarBtn {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* a comunidade. ejs sera feita aqui */
+
+.container-comunidade {
+    padding: 2rem;
+    background: #e7e7f0;
+    font-family: 'Inter', sans-serif;
+    
+}
+
+.banner-comunidade {
+    background: #cdd1f9;
+    border-radius: 10px;
+    padding: 2rem;
+    position: relative;
+    text-align: center;
+    color: #888;
+    margin-bottom: 1rem;
+    width: 90%;
+   
+}
+
+.btn-upload {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.cabecalho-comunidade {
+  position: relative;
+    display: flex;
+    align-items: center; 
+    left: 2rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    z-index: auto;
+}
+
+.nome-comunidade {
+  position: relative;
+    font-size: 1.5rem;
+    font-weight: bold;
+    
+}
+
+.info-usuario {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.avatar-usuario {
+    width: 20px;
+    height: 20px;
+    background: #ddd;
+    border-radius: 50%;
+}
+
+.nome-usuario {
+    font-size: 0.9rem;
+}
+
+.titulo-post {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.conteudo-post {
+    background: #bcc4f1;
+    padding: 1rem;
+    border-radius: 10px;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.acoes-post {
+    display: flex;
+    gap: 1rem;
+    padding-left: 0.5rem;
+}
+
+.layout-comunidade {
+       display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+    box-sizing: border-box;
+}

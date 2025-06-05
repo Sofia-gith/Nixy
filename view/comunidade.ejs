@@ -1,0 +1,108 @@
+<%- include('partials/header', { title: 'Página Inicial' }) %>
+    <div class="layout-comunidade">
+
+        <aside class="menuLateral">
+            <h3>Comunidades Populares</h3>
+            <hr />
+            <ul>
+                <% if (comunidades && comunidades.length> 0) { %>
+                    <% comunidades.forEach(com=> { %>
+                        <li>
+                            <a class="nomeComunidade" href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
+                                <div class="avatar_comunidade"></div>
+                                <%= com.NOME_COMUNIDADE_T14 %>
+                            </a>
+                            <small>(<%= com.total_membros || 0 %> membros)</small>
+                        </li>
+                        <% }) %>
+                            <% } else { %>
+                                <li>Nenhuma comunidade encontrada</li>
+                                <% } %>
+            </ul>
+
+            <!-- Botão para criar nova comunidade -->
+            <button class="btn-criar-comunidade" onclick="mostrarFormularioComunidade()">
+                + Nova Comunidade
+            </button>
+        </aside>
+
+        <main>
+            <div class="container-comunidade">
+                <!-- Barra de Pesquisa -->
+                <div class="barraPesquisa">
+                    <span class="search-icon"><img src="/imagens/procurar.png" alt="Buscar"></span>
+                    <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ fórum/ etc" />
+                    <button>Buscar</button>
+                </div>
+
+                <!-- Banner da Comunidade com cabeçalho sobreposto -->
+                <div class="banner-container">
+                    <div class="banner-comunidade">
+                        <span class="texto-banner">Aqui poderá uppar uma imagem</span>
+                        <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
+                        <!-- Cabeçalho sobre o banner -->
+                        <div class="cabecalho-comunidade">
+                            <div class="avatar"></div>
+                            <h2 class="nome-comunidade">
+                                <%= comunidade.NOME_COMUNIDADE_T14 %>
+                            </h2>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <!-- Posts -->
+                <% posts.forEach(post=> { %>
+                    <div class="post">
+                        <div class="info-usuario">
+                            <div class="avatar"
+                                style="background-image: url('<%= post.autor_foto ? `${post.autor_foto}?v=${Date.now()}` : '/img/default.png' %>');"
+                                data-user-id="<%= post.autor_id %>">
+                            </div>
+                            <span class="nome-usuario">
+                                <%= post.nomeUsuario %>
+                            </span>
+                        </div>
+                        <h3 class="titulo-post">
+                            <%= post.titulo %>
+                        </h3>
+                        <div class="conteudo-post">
+                            <p>
+                                <%- post.conteudo %>
+                            </p>
+                        </div>
+                        <div class="acoesPost">
+
+                            <button class="btn-avaliacao-positivo">
+                                <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
+                                <span id="likes">
+                                    <%= post.likes || 0 %>
+                                </span>
+                            </button>
+
+
+                            <button class="btn-avaliacao-negativo">
+                                <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
+                                <span id="dislikes">
+                                    <%= post.dislikes || 0 %>
+                                </span>
+                            </button>
+
+                        </div>
+                    </div>
+                    <% }) %>
+
+                        <!-- Botão Flutuante para Criar Post -->
+                        <button class="botao-flutuante">＋</button>
+
+            </div>
+        </main>
+    </div>
+
+
+
+    </body>
+
+    </html>
