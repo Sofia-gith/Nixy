@@ -498,16 +498,18 @@ app.get("/post/:id", async (req, res) => {
   }
 });
 
+
+
+
 app.get("/comunidade/:id", async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
 
   const comunidadeId = req.params.id;
+  const userId = req.session.user.ID_USUARIO_T01 || 0;
 
   try {
-    const posts = await buscarPosts(req);
-
     // Buscar comunidade específica pelo ID
     const [comunidadeRows] = await db.query(`
       SELECT 
@@ -527,17 +529,50 @@ app.get("/comunidade/:id", async (req, res) => {
 
     const comunidade = comunidadeRows[0];
 
-    // 🔍 Buscar todas as comunidades para a barra lateral
+    console.log(`Buscando posts para a comunidade ${comunidadeId}`); // Log de depuração
+
+    // Buscar posts específicos da comunidade
+    const [posts] = await db.query(`
+      SELECT 
+        p.ID_POST_T05 as id,
+        p.TITULO_POST_T05 as titulo,
+        p.CONTEUDO_POST_T05 as conteudo,
+        p.CATEGORIA_POST_T05 as forum,
+        p.ARQUIVO_POST_T05 as arquivo,
+        u.NOME_USUARIO_T01 as nomeUsuario,
+        u.ID_USUARIO_T01 as autor_id,
+        u.FOTO_PERFIL_URL as autor_foto,
+        p.DATA_CRIACAO_POST_T05 as data,
+        SUM(CASE WHEN LOWER(TRIM(a.TIPO_AVALIACAO_T08)) = 'positivo' THEN 1 ELSE 0 END) AS likes,
+        SUM(CASE WHEN LOWER(TRIM(a.TIPO_AVALIACAO_T08)) = 'negativo' THEN 1 ELSE 0 END) AS dislikes,
+        (SELECT TIPO_AVALIACAO_T08 FROM AVALIACAO_T08 
+         WHERE ID_POST_T05 = p.ID_POST_T05 AND ID_USUARIO_T01 = ? LIMIT 1) as user_vote
+      FROM POST_T05 p
+      JOIN USUARIO_T01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
+      LEFT JOIN AVALIACAO_T08 a ON p.ID_POST_T05 = a.ID_POST_T05
+      WHERE p.ID_COMUNIDADE_T14 = ?
+      GROUP BY p.ID_POST_T05
+      ORDER BY p.DATA_CRIACAO_POST_T05 DESC
+    `, [userId, comunidadeId]);
+
+    console.log(`Posts encontrados: ${posts.length}`); // Log de depuração
+
+    // Buscar todas as comunidades para o menu lateral
     const [comunidadesRows] = await db.query(`
-      SELECT ID_COMUNIDADE_T14, NOME_COMUNIDADE_T14
-      FROM comunidade_t14
+      SELECT 
+        c.ID_COMUNIDADE_T14,
+        c.NOME_COMUNIDADE_T14,
+        COUNT(uc.ID_USUARIO_T01) as total_membros
+      FROM comunidade_t14 c
+      LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
+      GROUP BY c.ID_COMUNIDADE_T14
     `);
 
-    res.render("comunidade", {
+    res.render("comunidade", {  
       user: req.session.user,
-      posts,
-      comunidade,
-      comunidades: comunidadesRows, // ✅ Adicionado aqui
+      posts: posts,
+      comunidade: comunidade,
+      comunidades: comunidadesRows,
       mostrarMenu: true
     });
 
@@ -546,10 +581,6 @@ app.get("/comunidade/:id", async (req, res) => {
     res.status(500).send("Erro ao carregar a comunidade");
   }
 });
-
-
-
-
 
 // Adicionando as rotas de postagem
 app.use('/api/postagen', postagemRoutes);

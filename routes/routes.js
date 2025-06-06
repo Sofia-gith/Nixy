@@ -16,6 +16,8 @@ import {
 import { uploadFotoPerfil } from "../controllers/UserController.js";
 import { getUsers, createUser, updateUser, deleteUser, login } from "../controllers/UserController.js";
 import { esqueceuSenha, exibirFormularioReset, formularioResetarSenha, redefinirSenha } from "../controllers/UserController.js";
+import * as postController from "../controllers/PostController.js"; // Adicione esta linha
+
 
 // Rotas de upload
 routes.post("/upload-foto", upload.single("foto"), (req, res) => {
@@ -44,6 +46,9 @@ routes.post('/resetarSenha/:token', redefinirSenha);
 // Rotas de postagem
 routes.delete("/post/:id", deletarPostagem);
 routes.put("/post/:id", atualizarPostagem);
+
+// Rota para posts de comunidade (CORRIGIDA - usando routes em vez de router)
+routes.get('/comunidade/:id/posts', postController.getPostagensPorComunidade);
 
 // Rotas para comentários
 routes.post("/comentario", criarComentario);

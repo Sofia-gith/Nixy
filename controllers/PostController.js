@@ -5,7 +5,7 @@ export const criarPostagem = async (req, res) => {
     try {
         console.log("Dados recebidos no backend:", req.body);
 
-        const { ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05 } = req.body;
+        const { ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, ID_COMUNIDADE_T14 } = req.body;
 
         if (!ID_USUARIO_T01 || !TITULO_POST_T05 || !CONTEUDO_POST_T05) {
             return res.status(400).json({
@@ -16,11 +16,16 @@ export const criarPostagem = async (req, res) => {
 
         const query = `
             INSERT INTO POST_T05 
-            (ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05) 
-            VALUES (?, ?, ?)
+            (ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05, ID_COMUNIDADE_T14) 
+            VALUES (?, ?, ?, ?)
         `;
 
-        const result = await db.query(query, [ID_USUARIO_T01, TITULO_POST_T05, CONTEUDO_POST_T05]);
+        const result = await db.query(query, [
+            ID_USUARIO_T01, 
+            TITULO_POST_T05, 
+            CONTEUDO_POST_T05,
+            ID_COMUNIDADE_T14 || null // Permite null para posts não associados a comunidades
+        ]);
 
         res.status(201).json({
             mensagem: 'Postagem criada com sucesso',
@@ -35,7 +40,6 @@ export const criarPostagem = async (req, res) => {
         });
     }
 };
-
 
 // Função para obter todas as postagens
 export const getTodasPostagens = (req, res) => {
@@ -193,139 +197,6 @@ export const deletarPostagem = async (req, res) => {
     }
 };
 
-
-// Função para adicionar ou atualizar avaliação (positiva ou negativa)
-// export const adicionarOuAtualizarAvaliacao = (req, res) => {
-
-//     console.log('Corpo da requisição:', req.body);
-//     console.log('Parâmetros da URL:', req.params);
-//     console.log('Headers:', req.headers);
-
-
-
-//     // if (!req.session.user || !req.session.user.ID_USUARIO_T01) {
-//     //     return res.status(401).json({ erro: 'Usuário não autenticado' });
-//     // }
-
-//     const idPost = req.params.id;
-//     const idUsuario = req.body.ID_USUARIO_T01;
-//     const tipoAvaliacao = req.body.tipo;
-//     // Verificar se o tipo de avaliação é válido
-//     const { ID_USUARIO_T01, tipo } = req.body;
-//     if (tipo !== 'positivo' && tipo !== 'negativo') {
-//         return res.status(400).json({ erro: 'Tipo de avaliação inválido. Use "positivo" ou "negativo".' });
-//     }
-//     // Verificar se o usuário já avaliou essa postagem
-//     const checkQuery = 'SELECT TIPO_AVALIACAO_T08 FROM AVALIACAO_T08 WHERE ID_POST_T05 = ? AND ID_USUARIO_T01 = ?';
-
-//     db.query(checkQuery, [idPost, idUsuario])
-//         .then(result => {
-//             if (result.length > 0) {
-//                 const avaliacaoExistente = result[0].TIPO_AVALIACAO_T08;
-
-//                 if (avaliacaoExistente === tipoAvaliacao) {
-//                     // Remove a avaliação se for o mesmo tipo
-//                     const deleteQuery = 'DELETE FROM AVALIACAO_T08 WHERE ID_POST_T05 = ? AND ID_USUARIO_T01 = ?';
-
-//                     return db.query(deleteQuery, [idPost, idUsuario])
-//                         .then(() => {
-
-//                             // Atualiza contagem de likes/dislikes
-//                             const countQuery = `
-//                                 SELECT 
-//         COALESCE(SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'positivo' THEN 1 ELSE 0 END), 0) AS likes,
-//         COALESCE(SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'negativo' THEN 1 ELSE 0 END), 0) AS dislikes
-//     FROM AVALIACAO_T08 
-//     WHERE ID_POST_T05 = ?
-// `;
-//                             return db.query(countQuery, [idPost])
-//                                 .then((countResult) => {
-//                                     console.log('countResult raw:', countResult);
-//                                     const contagem = countResult[0][0];
-//                                     res.status(200).json({
-//                                         mensagem: 'Avaliação registrada com sucesso',
-//                                         acao: 'adicionado',
-//                                         likes: contagem.likes || 0,
-//                                         dislikes: contagem.dislikes || 0,
-//                                         user_vote: tipoAvaliacao
-//                                     });
-//                                 });
-//                         });
-//                 } else {
-//                     // Atualiza o tipo de avaliação
-//                     const updateQuery = `
-//                         UPDATE AVALIACAO_T08 
-//                         SET TIPO_AVALIACAO_T08 = ? 
-//                         WHERE ID_POST_T05 = ? AND ID_USUARIO_T01 = ?
-//                     `;
-
-//                     return db.query(updateQuery, [tipoAvaliacao, idPost, idUsuario])
-//                         .then(() => {
-//                             // Atualiza contagem de likes/dislikes
-//                             const countQuery = `
-//                                 SELECT 
-//                                     SUM(CASE WHEN TIPO_AVALIACAO_T08 = 'positivo' THEN 1 ELSE 0 END) as likes,
-//                                     SUM(CASE WHEN TIPO_AVALIACAO_T08 = 'negativo' THEN 1 ELSE 0 END) as dislikes
-//                                 FROM AVALIACAO_T08 
-//                                 WHERE ID_POST_T05 = ?
-//                             `;
-
-//                             return db.query(countQuery, [idPost])
-//                                 .then((countResult) => {
-//                                     console.log('countResult raw:', countResult);
-//                                     const contagem = countResult[0][0];
-//                                     res.status(200).json({
-//                                         mensagem: 'Avaliação registrada com sucesso',
-//                                         acao: 'adicionado',
-//                                         likes: contagem.likes || 0,
-//                                         dislikes: contagem.dislikes || 0,
-//                                         user_vote: tipoAvaliacao
-//                                     });
-//                                 });
-//                         });
-//                 }
-//             } else {
-//                 // Adiciona nova avaliação
-//                 const insertQuery = `
-//                     INSERT INTO AVALIACAO_T08 (ID_POST_T05, ID_USUARIO_T01, TIPO_AVALIACAO_T08)
-//                     VALUES (?, ?, ?)
-//                 `;
-
-//                 return db.query(insertQuery, [idPost, idUsuario, tipoAvaliacao])
-//                     .then((insertResult) => {
-//                         console.log('Resultado da inserção:', insertResult);
-//                         // Atualiza contagem de likes/dislikes
-//                         console.log('Tentando inserir:', { idPost, idUsuario, tipoAvaliacao });
-//                         const countQuery = `
-//                                     SELECT 
-//                                         SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'positivo' THEN 1 ELSE 0 END) AS likes,
-//                                         SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'negativo' THEN 1 ELSE 0 END) AS dislikes
-//                                     FROM AVALIACAO_T08 
-//                                     WHERE ID_POST_T05 = ?
-//                                 `;
-
-//                         return db.query(countQuery, [idPost])
-//                             .then((countResult) => {
-//                                 console.log('countResult raw:', countResult);
-//                                 const contagem = countResult[0][0];
-//                                 console.log('likes:', contagem.likes, 'dislikes:', contagem.dislikes);
-//                                 res.status(200).json({
-//                                     mensagem: 'Avaliação registrada com sucesso',
-//                                     acao: 'adicionado',
-//                                     likes: contagem.likes || 0,
-//                                     dislikes: contagem.dislikes || 0,
-//                                     user_vote: tipoAvaliacao
-//                                 });
-//                             });
-//                     });
-//             }
-//         })
-//         .catch(err => {
-//             console.error('Erro ao verificar/atualizar avaliação:', err);
-//             return res.status(500).json({ erro: 'Erro interno ao processar avaliação' });
-//         });
-// };
-
 export const adicionarOuAtualizarAvaliacao = async (req, res) => {
     const { id: postId } = req.params;
     const { tipo } = req.body;
@@ -418,5 +289,43 @@ export const removerAvaliacao = (req, res) => {
         .catch(err => {
             console.error('Erro ao verificar avaliação existente:', err);
             return res.status(500).json({ erro: 'Erro ao verificar avaliação' });
+        });
+};
+
+// Função para obter postagens por comunidade
+export const getPostagensPorComunidade = (req, res) => {
+    const comunidadeId = req.params.comunidadeId;
+    const userId = req.session.user?.ID_USUARIO_T01 || 0;
+
+    const query = `
+        SELECT  
+            p.ID_POST_T05 as id,
+            p.TITULO_POST_T05 as titulo,
+            p.CONTEUDO_POST_T05 as conteudo,
+            p.CATEGORIA_POST_T05 as forum,
+            p.ARQUIVO_POST_T05 as arquivo,
+            u.NOME_USUARIO_T01 as nomeUsuario,
+            u.ID_USUARIO_T01 as autor_id,  
+            u.FOTO_PERFIL_URL as autor_foto,
+            p.DATA_CRIACAO_POST_T05 as data,
+            SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'positivo' THEN 1 ELSE 0 END) AS likes,
+            SUM(CASE WHEN LOWER(TRIM(TIPO_AVALIACAO_T08)) = 'negativo' THEN 1 ELSE 0 END) AS dislikes,
+            (SELECT TIPO_AVALIACAO_T08 FROM AVALIACAO_T08 
+             WHERE ID_POST_T05 = p.ID_POST_T05 AND ID_USUARIO_T01 = ? LIMIT 1) as user_vote
+        FROM POST_T05 p
+        JOIN USUARIO_T01 u ON p.ID_USUARIO_T01 = u.ID_USUARIO_T01
+        LEFT JOIN AVALIACAO_T08 a ON p.ID_POST_T05 = a.ID_POST_T05
+        WHERE p.ID_COMUNIDADE_T14 = ?  -- Filtra por ID da comunidade
+        GROUP BY p.ID_POST_T05
+        ORDER BY p.DATA_CRIACAO_POST_T05 DESC
+    `;
+
+    db.query(query, [userId, comunidadeId])
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            console.error('Erro ao buscar postagens da comunidade:', err);
+            return res.status(500).json({ erro: 'Erro ao buscar postagens da comunidade' });
         });
 };

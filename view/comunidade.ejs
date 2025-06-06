@@ -1,83 +1,76 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
     <div class="layout-comunidade">
 
-<%- include('partials/menuComuni', { comunidades: comunidades }) %>
+        <%- include('partials/menuComuni', { comunidades: comunidades }) %>
 
+            <main>
+                <div class="container-comunidade">
+                    <%- include('partials/BarraDeBusca') %>
 
-        <main>
-            <div class="container-comunidade">
-             
-                <%- include('partials/BarraDeBusca') %>
+                        <!-- Banner da Comunidade com cabeçalho sobreposto -->
+                        <div class="banner-container">
+                            <div class="banner-comunidade">
+                                <span class="texto-banner">Aqui poderá uppar uma imagem</span>
+                                <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
 
-                <!-- Banner da Comunidade com cabeçalho sobreposto -->
-                <div class="banner-container">
-                    <div class="banner-comunidade">
-                        <span class="texto-banner">Aqui poderá uppar uma imagem</span>
-                        <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
-
-                        
-                        <!-- Cabeçalho sobre o banner -->
-                        <div class="cabecalho-comunidade">
-                            <div class="avatar"></div>
-                            <h2 class="nome-comunidade">
-                                <%= comunidade.NOME_COMUNIDADE_T14 %>
-                            </h2>
-                        </div>
-                    </div>
-
-
-                </div>
-
-
-                <!-- Posts -->
-                <% posts.forEach(post=> { %>
-                    <div class="post">
-                        <div class="info-usuario">
-                            <div class="avatar"
-                                style="background-image: url('<%= post.autor_foto ? `${post.autor_foto}?v=${Date.now()}` : '/img/default.png' %>');"
-                                data-user-id="<%= post.autor_id %>">
+                                <!-- Cabeçalho sobre o banner -->
+                                <div class="cabecalho-comunidade">
+                                    <div class="avatar"></div>
+                                    <h2 class="nome-comunidade">
+                                        <%= comunidade.NOME_COMUNIDADE_T14 %>
+                                    </h2>
+                                </div>
                             </div>
-                            <span class="nome-usuario">
-                                <%= post.nomeUsuario %>
-                            </span>
                         </div>
-                        <h3 class="titulo-post">
-                            <%= post.titulo %>
-                        </h3>
-                        <div class="conteudo-post">
-                            <p>
-                                <%- post.conteudo %>
-                            </p>
-                        </div>
-                        <div class="acoesPost">
 
-                            <button class="btn-avaliacao-positivo">
-                                <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
-                                <span id="likes">
-                                    <%= post.likes || 0 %>
-                                </span>
-                            </button>
+                        <!-- Posts -->
+                        <% if (posts.length> 0) { %>
+                            <% posts.forEach(post=> { %>
+                                <div class="post">
+                                    <div class="info-usuario">
+                                        <div class="avatar"
+                                            style="background-image: url('<%= post.autor_foto ? `${post.autor_foto}?v=${Date.now()}` : '/img/default.png' %>');"
+                                            data-user-id="<%= post.autor_id %>">
+                                        </div>
+                                        <span class="nome-usuario">
+                                            <%= post.nomeUsuario %>
+                                        </span>
+                                    </div>
+                                    <h3 class="titulo-post">
+                                        <%= post.titulo %>
+                                    </h3>
+                                    <div class="conteudo-post">
+                                        <p>
+                                            <%- post.conteudo %>
+                                        </p>
+                                    </div>
+                                    <div class="acoesPost">
+                                        <button class="btn-avaliacao-positivo">
+                                            <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
+                                            <span id="likes">
+                                                <%= post.likes || 0 %>
+                                            </span>
+                                        </button>
+                                        <button class="btn-avaliacao-negativo">
+                                            <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
+                                            <span id="dislikes">
+                                                <%= post.dislikes || 0 %>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <div class="sem-posts">
+                                            <p>Nenhum post encontrado nesta comunidade. Seja o primeiro a postar!</p>
+                                        </div>
+                                        <% } %>
 
-
-                            <button class="btn-avaliacao-negativo">
-                                <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
-                                <span id="dislikes">
-                                    <%= post.dislikes || 0 %>
-                                </span>
-                            </button>
-
-                        </div>
-                    </div>
-                    <% }) %>
-
-                        <!-- Botão Flutuante para Criar Post -->
-                        <button class="botao-flutuante">＋</button>
-
-            </div>
-        </main>
+                                            <!-- Botão Flutuante para Criar Post -->
+                                            <button class="botao-flutuante">＋</button>
+                </div>
+            </main>
     </div>
-
-
 
     </body>
 
