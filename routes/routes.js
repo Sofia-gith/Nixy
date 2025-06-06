@@ -19,12 +19,17 @@ import { esqueceuSenha, exibirFormularioReset, formularioResetarSenha, redefinir
 import * as postController from "../controllers/PostController.js"; 
 import { verificarModerador } from '../controllers/moderadorController.js';
 import { 
-    adicionarModerador, 
-    removerModerador, 
+    removerModerador,
     deletarComunidade,
     listarModeradores
 } from '../controllers/moderadorController.js';
-
+import {
+    criarComunidade,
+    getComunidadePorId,
+    seguirComunidade,
+    adicionarModerador,
+    listarMembros
+} from '../controllers/ComuniController.js';
 
 
 // Rotas de upload
@@ -55,8 +60,12 @@ routes.post('/resetarSenha/:token', redefinirSenha);
 routes.delete("/post/:id", deletarPostagem);
 routes.put("/post/:id", atualizarPostagem);
 
-// Rota para posts de comunidade
+
+// Rotas para comunidade
 routes.get('/comunidade/:id/posts', postController.getPostagensPorComunidade);
+routes.post('/comunidade/:id/seguir', seguirComunidade);
+routes.post('/comunidade/:idComunidade/adicionar-moderador/:idUsuario', adicionarModerador);
+routes.get('/comunidade/:id/membros', listarMembros);
 
 // Rotas para comentários
 routes.post("/comentario", criarComentario);

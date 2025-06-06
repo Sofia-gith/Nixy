@@ -36,6 +36,30 @@
                             </div>
                         </div>
 
+                        <!-- Após o banner-container, adicione: -->
+                        <div class="info-comunidadeComuni">
+                            <div class="estatisticas">
+                                <span>
+                                    <%= comunidade.total_membros %> membros
+                                </span>
+                            </div>
+
+                            <% if (!comunidade.is_criador && !comunidade.is_moderador) { %>
+                                <button id="btnSeguirComunidade" class="btn-seguirComuni">Seguir Comunidade</button>
+                                <% } %>
+                        </div>
+
+                        <!-- Modal para gerenciar moderadores (adicione antes do fechamento do body) -->
+                        <div id="modalModeradores" class="modalComuni">
+                            <div class="modal-contentComuni">
+                                <span class="close-modalComuni">&times;</span>
+                                <h3>Gerenciar Moderadores</h3>
+                                <div class="lista-membros">
+                                    <!-- Lista de membros será carregada aqui -->
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Posts -->
                         <% if (posts.length> 0) { %>
                             <% posts.forEach(post=> { %>
@@ -52,11 +76,15 @@
                                     <h3 class="titulo-post">
                                         <%= post.titulo %>
                                     </h3>
-                                    <div class="conteudo-post">
-                                        <p>
-                                            <%- post.conteudo %>
-                                        </p>
-                                    </div>
+
+                                    <a href="/post/<%= post.id %>" class="redirecionarPost">
+                                        <div class="conteudo-post">
+
+                                            <p>
+                                                <%- post.conteudo %>
+                                            </p>
+                                        </div>
+                                    </a>
                                     <div class="acoesPost">
                                         <button class="btn-avaliacao-positivo">
                                             <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
@@ -131,6 +159,96 @@
                 }
             }
         });
+
+        // Botão seguir comunidade
+        document.getElementById('btnSeguirComunidade')?.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/comunidade/${<%= comunidade.ID_COMUNIDADE_T14 %>}/seguir`, {
+            method: 'POST',
+                credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.mensagem);
+            window.location.reload();
+        } else {
+            throw new Error(data.erro || 'Erro ao seguir comunidade');
+        }
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+        // Gerenciar moderadores
+        document.getElementById('btnGerenciarModeradores')?.addEventListener('click', async () => {
+            const modal = document.getElementById('modalModeradores');
+            const listaMembros = modal.querySelector('.lista-membros');
+
+            try {
+                // Carrega lista de membros
+                const response = await fetch(`/comunidade/${<%= comunidade.ID_COMUNIDADE_T14 %>}/membros`);
+        const membros = await response.json();
+
+        if (!response.ok) throw new Error('Erro ao carregar membros');
+
+        // Preenche a lista
+        listaMembros.innerHTML = membros.map(membro => `
+                <div class="membro">
+                    <div class="avatar" style="background-image: url('${membro.FOTO_PERFIL_URL || '/img/default.png'}')"></div>
+                    <span class="nome">${membro.NOME_USUARIO_T01}</span>
+                    <span class="cargo">${membro.cargo}</span>
+                    ${membro.cargo === 'Membro' ?
+                `<button class="btn-promover" data-user-id="${membro.ID_USUARIO_T01}">Tornar Moderador</button>` :
+                ''}
+                </div>
+            `).join('');
+
+        // Abre o modal
+        modal.style.display = 'block';
+
+        // Adiciona eventos aos botões de promover
+        document.querySelectorAll('.btn-promover').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const userId = e.target.dataset.userId;
+
+                try {
+                    const response = await fetch(
+                        `/comunidade/${<%= comunidade.ID_COMUNIDADE_T14 %>}/adicionar-moderador/${ userId } `, 
+                            { method: 'POST', credentials: 'include' }
+                        );
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            alert(data.mensagem);
+                            window.location.reload();
+                        } else {
+                            throw new Error(data.erro);
+                        }
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                });
+            });
+            
+        } catch (error) {
+            listaMembros.innerHTML = `< p class="erro" > ${ error.message }</p >`;
+        }
+    });
+
+    // Fechar modal
+    document.querySelector('.close-modal')?.addEventListener('click', () => {
+        document.getElementById('modalModeradores').style.display = 'none';
+    });
+
+    // Fechar modal ao clicar fora
+    window.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('modalModeradores')) {
+            document.getElementById('modalModeradores').style.display = 'none';
+        }
+    });
     </script>
     </body>
 
