@@ -1,161 +1,167 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
 
     <div class="AlinhaForum">
-       <%- include('partials/menuComuni', { comunidades: comunidades }) %>
+        <%- include('partials/menuComuni', { comunidades: comunidades }) %>
 
-        <!-- Modal para criar postagem -->
-        <div id="formPostagem" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close" onclick="fecharFormulario()">&times;</span>
-                <h2>Criar nova postagem</h2>
-                <form id="formPostagemForm">
-                    <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem"
-                        required />
+            <!-- Modal para criar postagem -->
+            <div id="formPostagem" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharFormulario()">&times;</span>
+                    <h2>Criar nova postagem</h2>
+                    <form id="formPostagemForm">
+                        <input type="text" id="TITULO_POST_T05" name="TITULO_POST_T05" placeholder="Título da postagem"
+                            required />
 
-                    <!-- <textarea id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" placeholder="Escreva aqui seu conteúdo..."
+                        <!-- <textarea id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" placeholder="Escreva aqui seu conteúdo..."
                         required></textarea> -->
-                    <div id="editor" style="height: 200px;">Escreva aqui seu conteúdo interessante...</div>
-                    <input type="hidden" id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" required />
+                        <div id="editor" style="height: 200px;">Escreva aqui seu conteúdo interessante...</div>
+                        <input type="hidden" id="CONTEUDO_POST_T05" name="CONTEUDO_POST_T05" required />
 
-                    <!-- Dropdown para selecionar comunidade -->
-                    <select id="ID_COMUNIDADE_T14" name="ID_COMUNIDADE_T14">
-                        <option value="">Selecione uma comunidade (opcional)</option>
-                        <% if (comunidades && comunidades.length> 0) { %>
-                            <% comunidades.forEach(com=> { %>
-                                <option value="<%= com.ID_COMUNIDADE_T14 %>">
-                                    <%= com.NOME_COMUNIDADE_T14 %>
-                                </option>
+                        <!-- Dropdown para selecionar comunidade -->
+                        <select id="ID_COMUNIDADE_T14" name="ID_COMUNIDADE_T14">
+                            <option value="">Selecione uma comunidade (opcional)</option>
+                            <% if (comunidades && comunidades.length> 0) { %>
+                                <% comunidades.forEach(com=> { %>
+                                    <option value="<%= com.ID_COMUNIDADE_T14 %>">
+                                        <%= com.NOME_COMUNIDADE_T14 %>
+                                    </option>
+                                    <% }) %>
+                                        <% } %>
+                        </select>
+
+                        <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05"
+                            placeholder="Tags/Categoria (opcional)" />
+
+                        <label for="arquivoPostagem" style="cursor: pointer;">
+                            📎 Anexar arquivo
+                            <input type="file" id="arquivoPostagem" name="arquivo"
+                                accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" style="display: none;" />
+                        </label>
+
+                        <div id="arquivo-preview" style="display: none;">
+                            <p>Arquivo selecionado: <span id="nome-arquivo"></span></p>
+                        </div>
+
+                        <button type="submit">Publicar</button>
+                    </form>
+                </div>
+            </div>
+
+
+
+            <!-- Modal para criar comunidade -->
+            <div id="formComunidade" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharFormularioComunidade()">&times;</span>
+                    <h2>Criar nova comunidade</h2>
+                    <form id="formComunidadeForm">
+                        <input type="text" id="NOME_COMUNIDADE_T14" name="nome" placeholder="Nome da comunidade"
+                            required />
+
+                        <textarea id="DESCRICAO_COMUNIDADE_T14" name="descricao"
+                            placeholder="Descrição da comunidade (opcional)"></textarea>
+
+                        <button type="submit">Criar Comunidade</button>
+                    </form>
+                </div>
+            </div>
+
+            <main class="PrincipalForum">
+
+                <%- include('partials/BarraDeBusca') %>
+
+                    <div id="posts-container">
+                        <% if (posts && posts.length> 0) { %>
+                            <% posts.forEach(post=> { %>
+
+                                <div class="post" data-post-id="<%= post.id %>">
+
+                                    <div class="forum-info">
+                                        <div class="avatar" class="usuario_avatar"
+                                            style="background-image: url('<%= post.autor_foto ? `${post.autor_foto}?v=${Date.now()}` : '/img/default.png' %>');"
+                                            data-user-id="<%= post.autor_id %>">
+                                        </div>
+                                        <span>
+                                            <% if (post.comunidade_nome) { %>
+                                                c/<%= post.comunidade_nome %>
+                                                    <% } else { %>
+                                                        Geral
+                                                        <% } %>
+                                        </span>
+                                        <span class="autor">• por <%= post.autor %></span>
+                                        <span class="data">• <%= new Date(post.data).toLocaleDateString('pt-BR') %>
+                                        </span>
+                                    </div>
+
+                                    <h2>
+                                        <%= post.titulo %>
+                                    </h2>
+                                    <a href="/post/<%= post.id %>" class="redirecionarPost">
+                                        <div class="ConteudoPost">
+                                            <%- post.conteudo %>
+
+                                                <% if (post.arquivo) { %>
+                                                    <div class="arquivo-post">
+                                                        <a href="<%= post.arquivo %>" target="_blank">
+                                                            📎 Ver anexo
+                                                        </a>
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+                                    </a>
+                                    <!-- Sistema de avaliação -->
+                                    <div class="interacoes-post">
+                                        <div class="avaliacoes">
+                                            <button
+                                                class="btn-avaliacao positivo <%= post.user_vote === 'positivo' ? 'ativo' : '' %>"
+                                                onclick="avaliarPost(<%= post.id %>, 'positivo')"
+                                                <%=post.user_vote==='positivo' ? 'disabled' : '' %>>
+                                                <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
+                                                <span id="likes-<%= post.id %>">
+                                                    <%= post.likes || 0 %>
+                                                </span>
+                                            </button>
+
+                                            <button
+                                                class="btn-avaliacao negativo <%= post.user_vote === 'negativo' ? 'ativo' : '' %>"
+                                                onclick="avaliarPost(<%= post.id %>, 'negativo')"
+                                                <%=post.user_vote==='negativo' ? 'disabled' : '' %>>
+                                                <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
+                                                <span id="dislikes-<%= post.id %>">
+                                                    <%= post.dislikes || 0 %>
+                                                </span>
+                                            </button>
+                                        </div>
+
+                                        <div class="comentarios">
+                                            <button class="btn-comentarios" onclick="verComentarios(<%= post.id %>)">
+                                                <img src="/imagens/comente.png" alt="">
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <% if (post.forum && post.forum.length> 0) { %>
+                                        <div class="tags">
+                                            <% post.forum.split(',').forEach(tag=> { %>
+                                                <span class="tag">
+                                                    <%= tag.trim() %>
+                                                </span>
+                                                <% }) %>
+                                        </div>
+                                        <% } %>
+                                </div>
                                 <% }) %>
-                                    <% } %>
-                    </select>
+                                    <% } else { %>
+                                        <div class="nenhum-post">
+                                            <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
+                                        </div>
+                                        <% } %>
 
-                    <input type="text" id="CATEGORIA_POST_T05" name="CATEGORIA_POST_T05"
-                        placeholder="Tags/Categoria (opcional)" />
-
-                    <label for="arquivoPostagem" style="cursor: pointer;">
-                        📎 Anexar arquivo
-                        <input type="file" id="arquivoPostagem" name="arquivo" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                            style="display: none;" />
-                    </label>
-
-                    <div id="arquivo-preview" style="display: none;">
-                        <p>Arquivo selecionado: <span id="nome-arquivo"></span></p>
                     </div>
 
-                    <button type="submit">Publicar</button>
-                </form>
-            </div>
-        </div>
-
-
-
-        <!-- Modal para criar comunidade -->
-        <div id="formComunidade" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close" onclick="fecharFormularioComunidade()">&times;</span>
-                <h2>Criar nova comunidade</h2>
-                <form id="formComunidadeForm">
-                    <input type="text" id="NOME_COMUNIDADE_T14" name="nome" placeholder="Nome da comunidade" required />
-
-                    <textarea id="DESCRICAO_COMUNIDADE_T14" name="descricao"
-                        placeholder="Descrição da comunidade (opcional)"></textarea>
-
-                    <button type="submit">Criar Comunidade</button>
-                </form>
-            </div>
-        </div>
-
-        <main class="PrincipalForum">
-
-            <%- include('partials/BarraDeBusca') %>
-
-            <div id="posts-container">
-                <% if (posts && posts.length> 0) { %>
-                    <% posts.forEach(post=> { %>
-
-                        <div class="post" data-post-id="<%= post.id %>">
-
-                            <div class="forum-info">
-                                <div class="avatar" class="usuario_avatar"
-                                    style="background-image: url('<%= post.autor_foto ? `${post.autor_foto}?v=${Date.now()}` : '/img/default.png' %>');"
-                                    data-user-id="<%= post.autor_id %>">
-                                </div>
-                                <span>
-                                    <% if (post.comunidade_nome) { %>
-                                        c/<%= post.comunidade_nome %>
-                                            <% } else { %>
-                                                Geral
-                                                <% } %>
-                                </span>
-                                <span class="autor">• por <%= post.autor %></span>
-                                <span class="data">• <%= new Date(post.data).toLocaleDateString('pt-BR') %></span>
-                            </div>
-
-                            <h2>
-                                <%= post.titulo %>
-                            </h2>
-                            <a href="/post/<%= post.id %>" class="redirecionarPost">
-                                <div class="ConteudoPost">
-                                    <%- post.conteudo %>
-
-                                        <% if (post.arquivo) { %>
-                                            <div class="arquivo-post">
-                                                <a href="<%= post.arquivo %>" target="_blank">
-                                                    📎 Ver anexo
-                                                </a>
-                                            </div>
-                                            <% } %>
-                                </div>
-                            </a>
-                            <!-- Sistema de avaliação -->
-                            <div class="interacoes-post">
-                                <div class="avaliacoes">
-                                    <button class="btn-avaliacao positivo"
-                                        onclick="avaliarPost(<%= post.id %>, 'positivo')">
-                                        <img class="avaliarBtn" src="/imagens/gostar.png" alt="">
-                                        <span id="likes-<%= post.id %>">
-                                            <%= post.likes || 0 %>
-                                        </span>
-                                    </button>
-
-                                    <button class="btn-avaliacao negativo"
-                                        onclick="avaliarPost(<%= post.id %>, 'negativo')">
-                                        <img class="avaliarBtn" src="/imagens/nao-gosto.png" alt="">
-                                        <span id="dislikes-<%= post.id %>">
-                                            <%= post.dislikes || 0 %>
-                                        </span>
-                                    </button>
-                                </div>
-
-                                <div class="comentarios">
-                                    <button class="btn-comentarios" onclick="verComentarios(<%= post.id %>)">
-                                        <img src="/imagens/comente.png" alt="">
-                                    </button>
-                                </div>
-                            </div>
-
-                            <% if (post.forum && post.forum.length> 0) { %>
-                                <div class="tags">
-                                    <% post.forum.split(',').forEach(tag=> { %>
-                                        <span class="tag">
-                                            <%= tag.trim() %>
-                                        </span>
-                                        <% }) %>
-                                </div>
-                                <% } %>
-                        </div>
-                        <% }) %>
-                            <% } else { %>
-                                <div class="nenhum-post">
-                                    <p>Nenhum post encontrado. Seja o primeiro a postar!</p>
-                                </div>
-                                <% } %>
-
-            </div>
-
-            <!-- Botão flutuante -->
-            <button class="botao-add" onclick="mostrarFormulario()">+</button>
-        </main>
+                    <!-- Botão flutuante -->
+                    <button class="botao-add" onclick="mostrarFormulario()">+</button>
+            </main>
     </div>
 
 
@@ -326,9 +332,19 @@
                     document.getElementById(`likes-${postId}`).textContent = result.likes;
                     document.getElementById(`dislikes-${postId}`).textContent = result.dislikes;
 
-                    // Desabilita os botões após votar
-                    document.querySelectorAll(`.post[data-post-id="${postId}"] .btn-avaliacao`)
-                        .forEach(btn => btn.disabled = true);
+                    // Obtém todos os botões do post
+                    const buttons = document.querySelectorAll(`.post[data-post-id="${postId}"] .btn-avaliacao`);
+
+                    // Remove classes ativo e desabilita todos os botões
+                    buttons.forEach(btn => {
+                        btn.classList.remove('ativo');
+                        btn.disabled = false;
+                    });
+
+                    // Adiciona classe ativo e desabilita apenas o botão clicado
+                    const clickedBtn = document.querySelector(`.post[data-post-id="${postId}"] .btn-avaliacao.${tipo}`);
+                    clickedBtn.classList.add('ativo');
+                    clickedBtn.disabled = true;
                 } else {
                     alert(result.erro || "Erro ao avaliar post");
                 }
@@ -338,8 +354,8 @@
             }
         }
 
-    
-     
+
+
     </script>
 
     </body>

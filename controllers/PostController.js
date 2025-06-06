@@ -213,47 +213,41 @@ export const adicionarOuAtualizarAvaliacao = async (req, res) => {
     try {
         // Verifica se o usuário já votou neste post
         const [existingVote] = await db.query(
-            'SELECT * FROM votos_usuarios WHERE post_id = ? AND user_id = ?',
+            'SELECT * FROM AVALIACAO_T08 WHERE ID_POST_T05 = ? AND ID_USUARIO_T01 = ?',
             [postId, userId]
         );
 
         if (existingVote.length > 0) {
-            return res.status(400).json({ erro: 'Você já votou neste post' });
+            // Se já votou, atualiza o voto
+            await db.query(
+                'UPDATE AVALIACAO_T08 SET TIPO_AVALIACAO_T08 = ? WHERE ID_POST_T05 = ? AND ID_USUARIO_T01 = ?',
+                [tipo, postId, userId]
+            );
+        } else {
+            // Se não votou, insere novo voto
+            await db.query(
+                'INSERT INTO AVALIACAO_T08 (ID_POST_T05, ID_USUARIO_T01, TIPO_AVALIACAO_T08) VALUES (?, ?, ?)',
+                [postId, userId, tipo]
+            );
         }
 
-        // Registra o voto do usuário
-        await db.query(
-            'INSERT INTO votos_usuarios (post_id, user_id) VALUES (?, ?)',
-            [postId, userId]
-        );
-
-        // Atualiza a contagem de likes/dislikes
-        const column = tipo === 'positivo' ? 'likes' : 'dislikes';
-        await db.query(
-            `UPDATE post_t05 SET ${column} = ${column} + 1 WHERE ID_POST_T05 = ?`,
-            [postId]
-        );
-
-        // Obtém os novos valores
-        const [post] = await db.query(
-            'SELECT likes, dislikes FROM post_t05 WHERE ID_POST_T05 = ?',
-            [postId]
-        );
+        // Obtém as contagens atualizadas
+        const [counts] = await db.query(`
+            SELECT 
+                SUM(CASE WHEN TIPO_AVALIACAO_T08 = 'positivo' THEN 1 ELSE 0 END) AS likes,
+                SUM(CASE WHEN TIPO_AVALIACAO_T08 = 'negativo' THEN 1 ELSE 0 END) AS dislikes
+            FROM AVALIACAO_T08
+            WHERE ID_POST_T05 = ?
+        `, [postId]);
 
         res.status(200).json({
             mensagem: 'Voto registrado com sucesso',
-            likes: post[0].likes,
-            dislikes: post[0].dislikes
+            likes: counts[0].likes || 0,
+            dislikes: counts[0].dislikes || 0
         });
 
     } catch (err) {
         console.error('Erro ao processar voto:', err);
-        
-        // Se for erro de chave duplicada (usuário tentando votar novamente)
-        if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ erro: 'Você já votou neste post' });
-        }
-
         res.status(500).json({ 
             erro: 'Erro ao processar voto',
             detalhes: err.message

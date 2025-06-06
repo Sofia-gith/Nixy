@@ -59,6 +59,7 @@ routes.post('/resetarSenha/:token', redefinirSenha);
 // Rotas de postagem
 routes.delete("/post/:id", deletarPostagem);
 routes.put("/post/:id", atualizarPostagem);
+routes.post("/api/posts/:id/avaliar", postController.adicionarOuAtualizarAvaliacao);
 
 
 // Rotas para comunidade
