@@ -1,45 +1,21 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
     <div class="layout-comunidade">
 
-        <aside class="menuLateral">
-            <h3>Comunidades Populares</h3>
-            <hr />
-            <ul>
-                <% if (comunidades && comunidades.length> 0) { %>
-                    <% comunidades.forEach(com=> { %>
-                        <li>
-                            <a class="nomeComunidade" href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
-                                <div class="avatar_comunidade"></div>
-                                <%= com.NOME_COMUNIDADE_T14 %>
-                            </a>
-                            <small>(<%= com.total_membros || 0 %> membros)</small>
-                        </li>
-                        <% }) %>
-                            <% } else { %>
-                                <li>Nenhuma comunidade encontrada</li>
-                                <% } %>
-            </ul>
+<%- include('partials/menuComuni', { comunidades: comunidades }) %>
 
-            <!-- Botão para criar nova comunidade -->
-            <button class="btn-criar-comunidade" onclick="mostrarFormularioComunidade()">
-                + Nova Comunidade
-            </button>
-        </aside>
 
         <main>
             <div class="container-comunidade">
-                <!-- Barra de Pesquisa -->
-                <div class="barraPesquisa">
-                    <span class="search-icon"><img src="/imagens/procurar.png" alt="Buscar"></span>
-                    <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ fórum/ etc" />
-                    <button>Buscar</button>
-                </div>
+             
+                <%- include('partials/BarraDeBusca') %>
 
                 <!-- Banner da Comunidade com cabeçalho sobreposto -->
                 <div class="banner-container">
                     <div class="banner-comunidade">
                         <span class="texto-banner">Aqui poderá uppar uma imagem</span>
                         <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
+
+                        
                         <!-- Cabeçalho sobre o banner -->
                         <div class="cabecalho-comunidade">
                             <div class="avatar"></div>

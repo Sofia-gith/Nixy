@@ -1,0 +1,100 @@
+<div class="barraPesquisa">
+    <span class="search-icon"><img src="/imagens/procurar.png" alt=""></span>
+    <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ comunidade/ etc" autocomplete="off" />
+    <div class="resultados-busca" id="resultadosBusca" style="display: none;">
+        <div class="secao-busca">
+            <h3>Comunidades</h3>
+            <div id="comunidades-resultados"></div>
+        </div>
+        <div class="secao-busca">
+            <h3>Posts</h3>
+            <div id="posts-resultados"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Barra de pesquisa
+    const campoPesquisa = document.getElementById('campoPesquisa');
+    const resultadosBusca = document.getElementById('resultadosBusca');
+    const comunidadesResultados = document.getElementById('comunidades-resultados');
+    const postsResultados = document.getElementById('posts-resultados');
+
+    // Debounce para evitar muitas requisições
+    let timeoutId;
+    campoPesquisa.addEventListener('input', function(e) {
+        clearTimeout(timeoutId);
+        const termo = e.target.value.trim();
+
+        if (termo.length === 0) {
+            resultadosBusca.style.display = 'none';
+            return;
+        }
+
+        timeoutId = setTimeout(() => {
+            buscarTermo(termo);
+        }, 300);
+    });
+
+    // Fechar resultados ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!campoPesquisa.contains(e.target) && !resultadosBusca.contains(e.target)) {
+            resultadosBusca.style.display = 'none';
+        }
+    });
+
+    async function buscarTermo(termo) {
+        try {
+            console.log('Buscando por:', termo);
+            const response = await fetch(`/buscar?termo=${encodeURIComponent(termo)}`);
+            const data = await response.json();
+            console.log('Resultados:', data);
+
+            if (response.ok) {
+                exibirResultados(data);
+                resultadosBusca.style.display = 'block';
+            } else {
+                console.error('Erro na resposta:', data);
+            }
+        } catch (error) {
+            console.error('Erro na busca:', error);
+        }
+    }
+
+    function exibirResultados(data) {
+        comunidadesResultados.innerHTML = '';
+        postsResultados.innerHTML = '';
+
+        if (data.comunidades && data.comunidades.length > 0) {
+            data.comunidades.forEach(comunidade => {
+                const div = document.createElement('div');
+                div.className = 'item-comunidade';
+                div.innerHTML = `
+                    <a href="/comunidade/${comunidade.id}">
+                        <strong>${comunidade.nome}</strong>
+                        <small>${comunidade.total_membros || 0} membros</small>
+                    </a>
+                `;
+                comunidadesResultados.appendChild(div);
+            });
+        } else {
+            comunidadesResultados.innerHTML = '<p>Nenhuma comunidade encontrada</p>';
+        }
+
+        if (data.posts && data.posts.length > 0) {
+            data.posts.forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'item-post';
+                div.innerHTML = `
+                    <a href="/post/${post.id}">
+                        <strong>${post.titulo}</strong>
+                        <small>por ${post.autor}</small>
+                    </a>
+                `;
+                postsResultados.appendChild(div);
+            });
+        } else {
+            postsResultados.innerHTML = '<p>Nenhum post encontrado</p>';
+        }
+    }
+</script>

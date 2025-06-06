@@ -1337,8 +1337,7 @@ footer {
 }
 
 
-
-/* posts do forum */
+/* post.ejs  do forum */
 
 .conteudoPrincipal {
   flex: 1;
@@ -1593,6 +1592,101 @@ footer {
   border-radius: 999px;
   font-weight: bold;
   cursor: pointer;
+}
+
+/* Estilos para o botão Responder */
+.btn-responder-comentario {
+    background: none;
+    border: none;
+    color: #D6A4EF;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px 10px;
+}
+
+.btn-responder-comentario:hover {
+    text-decoration: underline;
+}
+
+/* Formulário de resposta */
+.form-resposta {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.form-resposta textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+}
+
+.acoes-resposta {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancelar-resposta {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-enviar-resposta {
+    background-color: #D6A4EF;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Estilos para as respostas */
+.resposta-comentario {
+    margin-top: 10px;
+    padding: 10px;
+    border-left: 2px solid #D6A4EF;
+    background-color: #f5f5f5;
+}
+
+.info-resposta {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.avatar-resposta {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-size: cover;
+    margin-right: 8px;
+}
+
+.autor-resposta {
+    font-weight: bold;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.data-resposta {
+    color: #888;
+    font-size: 12px;
+}
+
+.conteudo-resposta {
+    font-size: 14px;
+    line-height: 1.4;
+    padding-left: 32px;
 }
 
 /* modal dos posts */

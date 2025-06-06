@@ -1,0 +1,24 @@
+        <aside class="menuLateral">
+            <h3>Comunidades Populares</h3>
+            <hr />
+            <ul>
+                <% if (comunidades && comunidades.length> 0) { %>
+                    <% comunidades.forEach(com=> { %>
+                        <li>
+                            <a class="nomeComunidade" href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
+                                <div class="avatar_comunidade"></div>
+                                <%= com.NOME_COMUNIDADE_T14 %>
+                            </a>
+                            <small>(<%= com.total_membros || 0 %> membros)</small>
+                        </li>
+                        <% }) %>
+                            <% } else { %>
+                                <li>Nenhuma comunidade encontrada</li>
+                                <% } %>
+            </ul>
+
+            <!-- Botão para criar nova comunidade -->
+            <button class="btn-criar-comunidade" onclick="mostrarFormularioComunidade()">
+                + Nova Comunidade
+            </button>
+        </aside>

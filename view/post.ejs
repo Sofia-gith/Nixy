@@ -28,12 +28,7 @@
 
         <!-- Conteúdo principal -->
         <main class="conteudoPrincipal">
-            <div class="barraPesquisa">
-                <span class="search-icon"><img src="/imagens/procurar.png" alt="Buscar"></span>
-                <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ fórum/ etc" />
-                <button>Buscar</button>
-            </div>
-
+          <%- include('partials/BarraDeBusca') %>
             <% if (error) { %>
                 <div class="error-message">
                     <h2>
@@ -113,7 +108,7 @@
                     </div>
 
                     <!-- Comentários -->
-                    <!-- Comentários -->
+
                     <div class="secaoComentarios">
                         <h3>Comentários</h3>
 
@@ -137,14 +132,34 @@
                                             <%= comentario.conteudo %>
                                         </div>
 
-                                        <% if (user && user.ID_USUARIO_T01===comentario.autor_id) { %>
-                                            <div class="comentarioAcoes">
+                                        <div class="comentarioAcoes">
+                                            <% if (user && user.ID_USUARIO_T01===comentario.autor_id) { %>
                                                 <button class="btn-editar-comentario"
                                                     onclick="editarComentario(<%= comentario.id %>)">Editar</button>
                                                 <button class="btn-deletar-comentario"
                                                     onclick="deletarComentario(<%= comentario.id %>)">Deletar</button>
+                                                <% } %>
+                                                    <button class="btn-responder-comentario"
+                                                        onclick="mostrarFormularioResposta(<%= comentario.id %>)">
+                                                        Responder
+                                                    </button>
+                                        </div>
+
+                                        <!-- Formulário de resposta (inicialmente oculto) -->
+                                        <div id="form-resposta-<%= comentario.id %>" class="form-resposta"
+                                            style="display: none;">
+                                            <textarea id="resposta-texto-<%= comentario.id %>"
+                                                placeholder="Escreva sua resposta..."></textarea>
+                                            <div class="acoes-resposta">
+                                                <button class="btn-cancelar-resposta"
+                                                    onclick="cancelarResposta(<%= comentario.id %>)">Cancelar</button>
+                                                <button class="btn-enviar-resposta"
+                                                    onclick="enviarResposta(<%= comentario.id %>)">Enviar</button>
                                             </div>
-                                            <% } %>
+                                        </div>
+
+                                        <!-- Container para as respostas -->
+                                        <div id="respostas-<%= comentario.id %>" class="respostas-container"></div>
                                     </div>
                                     <% }) %>
                                         <% } else { %>
@@ -200,6 +215,8 @@
                             <% } %>
         </aside>
 
+
+
         <script>
             function expandirComentario() {
                 const box = document.querySelector('.comentarioBox');
@@ -207,7 +224,7 @@
                 document.getElementById('novoComentario').focus();
             }
 
-      
+
             document.getElementById('novoComentario').addEventListener('focus', expandirComentario);
             document.getElementById('novoComentario').addEventListener('click', expandirComentario);
 
@@ -514,6 +531,158 @@
                 }
             });
 
+
+
+            // aqui eu vou colocar a resposta dos comentarios
+
+
+
+            // Adicione esta função para mostrar/ocultar respostas
+            function toggleRespostas(comentarioId) {
+                const respostasContainer = document.getElementById(`respostas-${comentarioId}`);
+                const btnRespostas = document.getElementById(`btn-respostas-${comentarioId}`);
+
+                if (respostasContainer.style.display === 'none' || !respostasContainer.style.display) {
+                    carregarRespostas(comentarioId);
+                    btnRespostas.textContent = 'Ocultar respostas';
+                } else {
+                    respostasContainer.style.display = 'none';
+                    btnRespostas.textContent = 'Ver respostas';
+                }
+            }
+
+            // Função para carregar respostas
+            async function carregarRespostas(comentarioId) {
+                try {
+                    const response = await fetch(`/comentario/${comentarioId}/respostas`);
+                    const respostas = await response.json();
+
+                    const respostasContainer = document.getElementById(`respostas-${comentarioId}`);
+                    respostasContainer.innerHTML = '';
+
+                    if (respostas.length > 0) {
+                        respostas.forEach(resposta => {
+                            const respostaElement = document.createElement('div');
+                            respostaElement.className = 'resposta-comentario';
+                            respostaElement.innerHTML = `
+                    <div class="info-resposta">
+                        <div class="avatar-resposta" style="background-image: url('${resposta.autor_foto || '/img/default.png'}')"></div>
+                        <span class="autor-resposta">${resposta.autor}</span>
+                        <span class="data-resposta">• ${new Date(resposta.data).toLocaleDateString('pt-BR')}</span>
+                    </div>
+                    <div class="conteudo-resposta">${resposta.conteudo}</div>
+                `;
+                            respostasContainer.appendChild(respostaElement);
+                        });
+                    } else {
+                        respostasContainer.innerHTML = '<p class="sem-respostas">Nenhuma resposta ainda.</p>';
+                    }
+
+                    respostasContainer.style.display = 'block';
+
+                    // Adiciona formulário para nova resposta
+                    const formResposta = document.createElement('div');
+                    formResposta.className = 'form-resposta';
+                    formResposta.innerHTML = `
+            <textarea id="resposta-texto-${comentarioId}" placeholder="Escreva sua resposta..."></textarea>
+            <button onclick="enviarResposta(${comentarioId})">Responder</button>
+        `;
+                    respostasContainer.appendChild(formResposta);
+
+                } catch (error) {
+                    console.error('Erro ao carregar respostas:', error);
+                }
+            }
+            // Função para enviar resposta
+            // Mostrar formulário de resposta
+            function mostrarFormularioResposta(comentarioId) {
+                const formResposta = document.getElementById(`form-resposta-${comentarioId}`);
+                formResposta.style.display = 'block';
+
+                // Foca no textarea
+                document.getElementById(`resposta-texto-${comentarioId}`).focus();
+            }
+
+            // Cancelar resposta
+            function cancelarResposta(comentarioId) {
+                const formResposta = document.getElementById(`form-resposta-${comentarioId}`);
+                formResposta.style.display = 'none';
+                document.getElementById(`resposta-texto-${comentarioId}`).value = '';
+            }
+
+            // Enviar resposta
+            async function enviarResposta(comentarioId) {
+                const texto = document.getElementById(`resposta-texto-${comentarioId}`).value.trim();
+
+                if (!texto) {
+                    alert('Por favor, escreva uma resposta');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/resposta-comentario', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ID_COMENTARIO_T06: comentarioId,
+                            ID_USUARIO_T01: <%= user.ID_USUARIO_T01 %>,
+                            CONTEUDO_RESPOSTA_T07: texto
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Erro ao enviar resposta');
+                    }
+
+                    // Limpa o formulário
+                    document.getElementById(`resposta-texto-${comentarioId}`).value = '';
+
+                    // Esconde o formulário
+                    document.getElementById(`form-resposta-${comentarioId}`).style.display = 'none';
+
+                    // Recarrega as respostas
+                    await carregarRespostas(comentarioId);
+
+                } catch (error) {
+                    console.error('Erro ao enviar resposta:', error);
+                    alert('Erro ao enviar resposta: ' + error.message);
+                }
+            }
+
+            // Carregar respostas de um comentário
+            async function carregarRespostas(comentarioId) {
+                try {
+                    const response = await fetch(`/comentario/${comentarioId}/respostas`);
+                    const respostas = await response.json();
+
+                    const container = document.getElementById(`respostas-${comentarioId}`);
+                    container.innerHTML = '';
+
+                    if (respostas.length > 0) {
+                        respostas.forEach(resposta => {
+                            const respostaHTML = `
+                    <div class="resposta-comentario">
+                        <div class="info-resposta">
+                            <div class="avatar-resposta" 
+                                 style="background-image: url('${resposta.autor_foto || '/img/default.png'}')"></div>
+                            <span class="autor-resposta">${resposta.autor}</span>
+                            <span class="data-resposta">
+                                ${new Date(resposta.data).toLocaleString('pt-BR')}
+                            </span>
+                        </div>
+                        <div class="conteudo-resposta">${resposta.conteudo}</div>
+                    </div>
+                `;
+                            container.insertAdjacentHTML('beforeend', respostaHTML);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar respostas:', error);
+                }
+            }
+
         </script>
 
         <div id="modalEdicao" class="modalPost">
@@ -552,6 +721,14 @@
 
 
                     </div>
+
+
+
+
+
+
+
+
                 </form>
             </div>
         </div>

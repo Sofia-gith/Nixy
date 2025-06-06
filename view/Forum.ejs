@@ -1,31 +1,7 @@
 <%- include('partials/header', { title: 'Página Inicial' }) %>
 
     <div class="AlinhaForum">
-        <aside class="menuLateral">
-            <h3>Comunidades Populares</h3>
-            <hr />
-            <ul>
-                <% if (comunidades && comunidades.length> 0) { %>
-                    <% comunidades.forEach(com=> { %>
-                        <li>
-
-                            <a class="nomeComunidade" href="/comunidade/<%= com.ID_COMUNIDADE_T14 %>">
-                                <div class="avatar_comunidade"></div>
-                                <%= com.NOME_COMUNIDADE_T14 %>
-                            </a>
-                            <small>(<%= com.total_membros || 0 %> membros)</small>
-                        </li>
-                        <% }) %>
-                            <% } else { %>
-                                <li>Nenhuma comunidade encontrada</li>
-                                <% } %>
-            </ul>
-
-            <!-- Botão para criar nova comunidade -->
-            <button class="btn-criar-comunidade" onclick="mostrarFormularioComunidade()">
-                + Nova Comunidade
-            </button>
-        </aside>
+       <%- include('partials/menuComuni', { comunidades: comunidades }) %>
 
         <!-- Modal para criar postagem -->
         <div id="formPostagem" class="modal" style="display: none;">
@@ -91,21 +67,7 @@
 
         <main class="PrincipalForum">
 
-            <div class="barraPesquisa">
-                <span class="search-icon"><img src="../imagens/procurar.png" alt=""></span>
-                <input type="text" id="campoPesquisa" placeholder="Busque palavra-chave/ comunidade/ etc"
-                    autocomplete="off" />
-                <div class="resultados-busca" id="resultadosBusca" style="display: none;">
-                    <div class="secao-busca">
-                        <h3>Comunidades</h3>
-                        <div id="comunidades-resultados"></div>
-                    </div>
-                    <div class="secao-busca">
-                        <h3>Posts</h3>
-                        <div id="posts-resultados"></div>
-                    </div>
-                </div>
-            </div>
+            <%- include('partials/BarraDeBusca') %>
 
             <div id="posts-container">
                 <% if (posts && posts.length> 0) { %>
@@ -347,121 +309,37 @@
 
         // para avaliar os posts
 
-async function avaliarPost(postId, tipo) {
-    try {
-        const response = await fetch(`/api/posts/${postId}/avaliar`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ tipo })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            // Atualiza os contadores
-            document.getElementById(`likes-${postId}`).textContent = result.likes;
-            document.getElementById(`dislikes-${postId}`).textContent = result.dislikes;
-            
-            // Desabilita os botões após votar
-            document.querySelectorAll(`.post[data-post-id="${postId}"] .btn-avaliacao`)
-                .forEach(btn => btn.disabled = true);
-        } else {
-            alert(result.erro || "Erro ao avaliar post");
-        }
-    } catch (error) {
-        console.error("Erro:", error);
-        alert("Erro ao avaliar post");
-    }
-}
-
-        // Barra de pesquisa
-        const campoPesquisa = document.getElementById('campoPesquisa');
-        const resultadosBusca = document.getElementById('resultadosBusca');
-        const comunidadesResultados = document.getElementById('comunidades-resultados');
-        const postsResultados = document.getElementById('posts-resultados');
-
-        // Debounce para evitar muitas requisições
-        let timeoutId;
-        campoPesquisa.addEventListener('input', function (e) {
-            clearTimeout(timeoutId);
-            const termo = e.target.value.trim();
-
-            if (termo.length === 0) {
-                resultadosBusca.style.display = 'none';
-                return;
-            }
-
-            timeoutId = setTimeout(() => {
-                buscarTermo(termo);
-            }, 300);
-        });
-
-        // Fechar resultados ao clicar fora
-        document.addEventListener('click', function (e) {
-            if (!campoPesquisa.contains(e.target) && !resultadosBusca.contains(e.target)) {
-                resultadosBusca.style.display = 'none';
-            }
-        });
-
-        async function buscarTermo(termo) {
+        async function avaliarPost(postId, tipo) {
             try {
-                console.log('Buscando por:', termo); // Adicione este log para debug
-                const response = await fetch(`/buscar?termo=${encodeURIComponent(termo)}`);
-                const data = await response.json();
-                console.log('Resultados:', data); // Adicione este log para debug
+                const response = await fetch(`/api/posts/${postId}/avaliar`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ tipo })
+                });
+
+                const result = await response.json();
 
                 if (response.ok) {
-                    exibirResultados(data);
-                    resultadosBusca.style.display = 'block';
+                    // Atualiza os contadores
+                    document.getElementById(`likes-${postId}`).textContent = result.likes;
+                    document.getElementById(`dislikes-${postId}`).textContent = result.dislikes;
+
+                    // Desabilita os botões após votar
+                    document.querySelectorAll(`.post[data-post-id="${postId}"] .btn-avaliacao`)
+                        .forEach(btn => btn.disabled = true);
                 } else {
-                    console.error('Erro na resposta:', data);
+                    alert(result.erro || "Erro ao avaliar post");
                 }
             } catch (error) {
-                console.error('Erro na busca:', error);
+                console.error("Erro:", error);
+                alert("Erro ao avaliar post");
             }
         }
 
-        function exibirResultados(data) {
-
-            comunidadesResultados.innerHTML = '';
-            postsResultados.innerHTML = '';
-
-
-            if (data.comunidades && data.comunidades.length > 0) {
-                data.comunidades.forEach(comunidade => {
-                    const div = document.createElement('div');
-                    div.className = 'item-comunidade';
-                    div.innerHTML = `
-                <a href="/comunidade/${comunidade.id}">
-                    <strong>${comunidade.nome}</strong>
-                    <small>${comunidade.total_membros || 0} membros</small>
-                </a>
-            `;
-                    comunidadesResultados.appendChild(div);
-                });
-            } else {
-                comunidadesResultados.innerHTML = '<p>Nenhuma comunidade encontrada</p>';
-            }
-
-            if (data.posts && data.posts.length > 0) {
-                data.posts.forEach(post => {
-                    const div = document.createElement('div');
-                    div.className = 'item-post';
-                    div.innerHTML = `
-                <a href="/post/${post.id}">
-                    <strong>${post.titulo}</strong>
-                    <small>por ${post.autor}</small>
-                </a>
-            `;
-                    postsResultados.appendChild(div);
-                });
-            } else {
-                postsResultados.innerHTML = '<p>Nenhum post encontrado</p>';
-            }
-        }
-
+    
+     
     </script>
 
     </body>
