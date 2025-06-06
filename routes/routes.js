@@ -16,7 +16,15 @@ import {
 import { uploadFotoPerfil } from "../controllers/UserController.js";
 import { getUsers, createUser, updateUser, deleteUser, login } from "../controllers/UserController.js";
 import { esqueceuSenha, exibirFormularioReset, formularioResetarSenha, redefinirSenha } from "../controllers/UserController.js";
-import * as postController from "../controllers/PostController.js"; // Adicione esta linha
+import * as postController from "../controllers/PostController.js"; 
+import { verificarModerador } from '../controllers/moderadorController.js';
+import { 
+    adicionarModerador, 
+    removerModerador, 
+    deletarComunidade,
+    listarModeradores
+} from '../controllers/moderadorController.js';
+
 
 
 // Rotas de upload
@@ -47,7 +55,7 @@ routes.post('/resetarSenha/:token', redefinirSenha);
 routes.delete("/post/:id", deletarPostagem);
 routes.put("/post/:id", atualizarPostagem);
 
-// Rota para posts de comunidade (CORRIGIDA - usando routes em vez de router)
+// Rota para posts de comunidade
 routes.get('/comunidade/:id/posts', postController.getPostagensPorComunidade);
 
 // Rotas para comentários
@@ -60,6 +68,12 @@ routes.delete("/comentario/:id", deletarComentario);
 routes.post('/resposta-comentario', criarRespostaComentario);
 routes.get("/comentario/:id/respostas", getRespostasPorComentario);
 routes.delete("/resposta-comentario/:id", deletarResposta);
+
+// Rotas para moderador
+routes.post('/:comunidadeId/moderadores', verificarModerador, adicionarModerador);
+routes.delete('/:comunidadeId/moderadores/:userId', verificarModerador, removerModerador);
+routes.get('/:comunidadeId/moderadores', listarModeradores);
+routes.delete('/comunidade/:id', verificarModerador, deletarComunidade);
 
 // Rota de busca
 routes.get("/buscar", buscarConteudo);

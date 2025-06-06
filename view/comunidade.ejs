@@ -19,6 +19,19 @@
                                     <h2 class="nome-comunidade">
                                         <%= comunidade.NOME_COMUNIDADE_T14 %>
                                     </h2>
+
+                                    <% if (comunidade.is_criador || comunidade.is_moderador) { %>
+                                        <div class="moderador-acoes">
+                                            <button id="btnDeletarComunidade" class="btn-moderador">
+                                                <img src="/imagens/lixo.png" alt="Deletar Comunidade">
+                                            </button>
+                                            <% if (comunidade.is_criador) { %>
+                                                <button id="btnGerenciarModeradores" class="btn-moderador">
+                                                    <img src="/imagens/adicionarMod.png" alt="Gerenciar Moderadores">
+                                                </button>
+                                                <% } %>
+                                        </div>
+                                        <% } %>
                                 </div>
                             </div>
                         </div>
@@ -72,6 +85,53 @@
             </main>
     </div>
 
+    <script>
+        console.log('Dados da comunidade:', <%= JSON.stringify(comunidade) %>);
+    </script>
+
+    <script>
+        document.getElementById('btnDeletarComunidade')?.addEventListener('click', async () => {
+            const comunidadeId = '<%= comunidade.ID_COMUNIDADE_T14 %>';
+            console.log('[FRONT] Iniciando processo de deleção para comunidade:', comunidadeId);
+
+            const confirmacao = confirm('Tem certeza que deseja deletar esta comunidade? Esta ação não pode ser desfeita.');
+            if (!confirmacao) {
+                console.log('[FRONT] Deleção cancelada pelo usuário');
+                return;
+            }
+
+            try {
+                console.log('[FRONT] Enviando requisição DELETE...');
+                const response = await fetch(`/comunidade/${comunidadeId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                console.log('[FRONT] Resposta recebida - Status:', response.status);
+                const data = await response.json();
+                console.log('[FRONT] Dados da resposta:', data);
+
+                if (!response.ok) {
+                    throw new Error(data.erro || 'Erro ao deletar comunidade');
+                }
+
+                alert('Comunidade deletada com sucesso!');
+                console.log('[FRONT] Redirecionando para /comunidades...');
+                window.location.href = '/comunidades';
+            } catch (error) {
+                console.error('[FRONT] Erro completo:', error);
+                alert(`Erro: ${error.message}`);
+
+                if (error.message.includes('não encontrada')) {
+                    console.log('[FRONT] Recarregando página...');
+                    window.location.reload();
+                }
+            }
+        });
+    </script>
     </body>
 
     </html>

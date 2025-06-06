@@ -510,26 +510,31 @@ app.get("/comunidade/:id", async (req, res) => {
   const userId = req.session.user.ID_USUARIO_T01 || 0;
 
   try {
-    // Buscar comunidade específica pelo ID
+    // Buscar comunidade específica pelo ID com informações de moderação
     const [comunidadeRows] = await db.query(`
       SELECT 
         c.ID_COMUNIDADE_T14,
         c.NOME_COMUNIDADE_T14,
         c.DESCRICAO_COMUNIDADE_T14,
-        COUNT(uc.ID_USUARIO_T01) as total_membros
+        c.ID_USUARIO_CRIADOR,
+        COUNT(uc.ID_USUARIO_T01) as total_membros,
+        CASE 
+          WHEN c.ID_USUARIO_CRIADOR = ? THEN TRUE
+          ELSE FALSE
+        END as is_criador,
+        (SELECT COUNT(*) FROM moderadores_comunidade 
+         WHERE ID_COMUNIDADE_T14 = c.ID_COMUNIDADE_T14 AND ID_USUARIO_T01 = ?) as is_moderador
       FROM comunidade_t14 c
       LEFT JOIN usuario_comunidade_t15 uc ON c.ID_COMUNIDADE_T14 = uc.ID_COMUNIDADE_T14
       WHERE c.ID_COMUNIDADE_T14 = ?
       GROUP BY c.ID_COMUNIDADE_T14
-    `, [comunidadeId]);
+    `, [userId, userId, comunidadeId]);
 
     if (comunidadeRows.length === 0) {
       return res.status(404).send("Comunidade não encontrada");
     }
 
     const comunidade = comunidadeRows[0];
-
-    console.log(`Buscando posts para a comunidade ${comunidadeId}`); // Log de depuração
 
     // Buscar posts específicos da comunidade
     const [posts] = await db.query(`
@@ -555,8 +560,6 @@ app.get("/comunidade/:id", async (req, res) => {
       ORDER BY p.DATA_CRIACAO_POST_T05 DESC
     `, [userId, comunidadeId]);
 
-    console.log(`Posts encontrados: ${posts.length}`); // Log de depuração
-
     // Buscar todas as comunidades para o menu lateral
     const [comunidadesRows] = await db.query(`
       SELECT 
@@ -571,7 +574,12 @@ app.get("/comunidade/:id", async (req, res) => {
     res.render("comunidade", {  
       user: req.session.user,
       posts: posts,
-      comunidade: comunidade,
+      comunidade: {
+        ...comunidade,
+        // Garantir que os valores booleanos sejam realmente booleanos
+        is_criador: !!comunidade.is_criador,
+        is_moderador: !!comunidade.is_moderador
+      },
       comunidades: comunidadesRows,
       mostrarMenu: true
     });
@@ -581,6 +589,64 @@ app.get("/comunidade/:id", async (req, res) => {
     res.status(500).send("Erro ao carregar a comunidade");
   }
 });
+
+
+app.delete("/comunidade/:id", async (req, res) => {
+    try {
+        const comunidadeId = req.params.id;
+        const userId = req.session.user?.ID_USUARIO_T01;
+
+        if (!userId) {
+            return res.status(401).json({ erro: 'Usuário não autenticado' });
+        }
+
+        // Verifica se a comunidade existe e se o usuário é o criador
+        const [comunidade] = await db.query(
+            'SELECT ID_USUARIO_CRIADOR FROM comunidade_t14 WHERE ID_COMUNIDADE_T14 = ?',
+            [comunidadeId]
+        );
+
+        if (comunidade.length === 0) {
+            return res.status(404).json({ erro: 'Comunidade não encontrada' });
+        }
+
+        if (comunidade[0].ID_USUARIO_CRIADOR !== userId) {
+            return res.status(403).json({ erro: 'Apenas o criador pode deletar a comunidade' });
+        }
+
+        // Inicia uma transação para garantir a integridade dos dados
+        await db.query('START TRANSACTION');
+
+        try {
+            // Remove todas as relações primeiro
+            await db.query('DELETE FROM usuario_comunidade_t15 WHERE ID_COMUNIDADE_T14 = ?', [comunidadeId]);
+            await db.query('DELETE FROM moderadores_comunidade WHERE ID_COMUNIDADE_T14 = ?', [comunidadeId]);
+            
+            // Remove os posts e suas avaliações
+            const [posts] = await db.query('SELECT ID_POST_T05 FROM POST_T05 WHERE ID_COMUNIDADE_T14 = ?', [comunidadeId]);
+            for (const post of posts) {
+                await db.query('DELETE FROM AVALIACAO_T08 WHERE ID_POST_T05 = ?', [post.ID_POST_T05]);
+            }
+            await db.query('DELETE FROM POST_T05 WHERE ID_COMUNIDADE_T14 = ?', [comunidadeId]);
+            
+            // Finalmente remove a comunidade
+            await db.query('DELETE FROM comunidade_t14 WHERE ID_COMUNIDADE_T14 = ?', [comunidadeId]);
+            
+            await db.query('COMMIT');
+            
+            res.status(200).json({ mensagem: 'Comunidade deletada com sucesso' });
+        } catch (err) {
+            await db.query('ROLLBACK');
+            throw err;
+        }
+    } catch (err) {
+        console.error('Erro ao deletar comunidade:', err);
+        return res.status(500).json({ erro: 'Erro interno ao deletar comunidade' });
+    }
+});
+
+
+app.use('/comunidade', comunidadeRoutes);
 
 // Adicionando as rotas de postagem
 app.use('/api/postagen', postagemRoutes);

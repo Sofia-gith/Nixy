@@ -1812,7 +1812,7 @@ footer {
 }
 
 
-/* a comunidade. ejs sera feita aqui */
+                                                    /* a comunidade. ejs sera feita aqui */
 
 .container-comunidade {
   padding: 2rem;
@@ -1908,4 +1908,31 @@ main {
   flex: 1;
   padding: 1rem;
   box-sizing: border-box;
+}
+
+/* moderação da Comunidade */
+
+/* Adicione ao seu arquivo CSS */
+.moderador-acoes {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.btn-moderador {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.btn-moderador:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-moderador img {
+    width: 20px;
+    height: 20px;
 }
