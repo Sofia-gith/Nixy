@@ -62,7 +62,7 @@ routes.put("/post/:id", atualizarPostagem);
 
 
 // Rotas para comunidade
-routes.get('/comunidade/:id/posts', postController.getPostagensPorComunidade);
+routes.get('/comunidade/:id/posts', postController.getPostagensPorComunidade); 
 routes.post('/comunidade/:id/seguir', seguirComunidade);
 routes.post('/comunidade/:idComunidade/adicionar-moderador/:idUsuario', adicionarModerador);
 routes.get('/comunidade/:id/membros', listarMembros);
@@ -83,6 +83,8 @@ routes.post('/:comunidadeId/moderadores', verificarModerador, adicionarModerador
 routes.delete('/:comunidadeId/moderadores/:userId', verificarModerador, removerModerador);
 routes.get('/:comunidadeId/moderadores', listarModeradores);
 routes.delete('/comunidade/:id', verificarModerador, deletarComunidade);
+routes.delete('/comunidade/:id/posts/:postId', verificarModerador, postController.deletarPostComunidade);
+
 
 // Rota de busca
 routes.get("/buscar", buscarConteudo);

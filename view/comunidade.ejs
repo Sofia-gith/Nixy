@@ -10,8 +10,8 @@
                         <!-- Banner da Comunidade com cabeçalho sobreposto -->
                         <div class="banner-container">
                             <div class="banner-comunidade">
-                                <span class="texto-banner">Aqui poderá uppar uma imagem</span>
-                                <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button>
+                                <span class="texto-banner"> </span>
+                                <!-- <button class="btn-upload"><img src="/imagens/camera.png" alt="Upload"></button> -->
 
                                 <!-- Cabeçalho sobre o banner -->
                                 <div class="cabecalho-comunidade">
@@ -20,20 +20,22 @@
                                         <%= comunidade.NOME_COMUNIDADE_T14 %>
                                     </h2>
 
-                                    <% if (comunidade.is_criador || comunidade.is_moderador) { %>
-                                        <div class="moderador-acoes">
-                                            <button id="btnDeletarComunidade" class="btn-moderador">
-                                                <img src="/imagens/lixo.png" alt="Deletar Comunidade">
-                                            </button>
-                                            <% if (comunidade.is_criador) { %>
-                                                <button id="btnGerenciarModeradores" class="btn-moderador">
-                                                    <img src="/imagens/adicionarMod.png" alt="Gerenciar Moderadores">
-                                                </button>
-                                                <% } %>
-                                        </div>
+
+                                </div>
+
+                            </div>
+                            <% if (comunidade.is_criador || comunidade.is_moderador) { %>
+                                <div class="moderador-acoes">
+                                    <button id="btnDeletarComunidade" class="btn-moderador">
+                                        <img src="/imagens/lixo.png" alt="Deletar Comunidade">
+                                    </button>
+                                    <% if (comunidade.is_criador) { %>
+                                        <button id="btnGerenciarModeradores" class="btn-moderador">
+                                            <img src="/imagens/adicionarMod.png" alt="Gerenciar Moderadores">
+                                        </button>
                                         <% } %>
                                 </div>
-                            </div>
+                                <% } %>
                         </div>
 
                         <!-- Após o banner-container, adicione: -->
@@ -99,6 +101,18 @@
                                             </span>
                                         </button>
                                     </div>
+
+                                    <!-- para o moderador poder excluir -->
+
+                                    <% if ((comunidade.is_criador || comunidade.is_moderador) && post.autor_id
+                                        !==user.ID_USUARIO_T01) { %>
+                                        <div class="moderador-post-acoes">
+                                            <button class="btn-excluir-postModerador" data-post-id="<%= post.id %>">
+                                                <img src="/imagens/lixo.png" alt="Excluir Post">
+                                            </button>
+                                        </div>
+                                        <% } %>
+
                                 </div>
                                 <% }); %>
                                     <% } else { %>
@@ -130,7 +144,7 @@
 
             try {
                 console.log('[FRONT] Enviando requisição DELETE...');
-                const response = await fetch(`/comunidade/${comunidadeId}`, {
+                await fetch(`/comunidade/${comunidadeId}/posts/${postId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
@@ -234,7 +248,7 @@
             });
             
         } catch (error) {
-            listaMembros.innerHTML = `< p class="erro" > ${ error.message }</p >`;
+            listaMembros.innerHTML = `< p class="erro" > ${ error.message }</p > `;
         }
     });
 
@@ -249,6 +263,47 @@
             document.getElementById('modalModeradores').style.display = 'none';
         }
     });
+
+  document.querySelectorAll('.btn-excluir-postModerador').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        const postId = btn.dataset.postId; // Mudança aqui - pega direto do botão
+        const comunidadeId = '<%= comunidade.ID_COMUNIDADE_T14 %>';
+        
+        const confirmacao = confirm('Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.');
+        if (!confirmacao) return;
+
+        try {
+            const response = await fetch(`/comunidade/${comunidadeId}/posts/${postId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json' // Garante que queremos JSON de volta
+                }
+            });
+
+            // Verifica se a resposta é JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(text || 'Resposta inválida do servidor');
+            }
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.mensagem);
+                window.location.reload();
+            } else {
+                throw new Error(data.erro || 'Erro ao excluir post');
+            }
+        } catch (error) {
+            console.error('Erro completo:', error);
+            alert(`Erro: ${error.message}`);
+        }
+    });
+});
+
     </script>
     </body>
 

@@ -3,7 +3,7 @@ import { db } from "../db.js";
 // Verifica se o usuário é moderador de uma comunidade específica
 
 export const verificarModerador = async (req, res, next) => {
-    const { id } = req.params; // Alterado de comunidadeId para id
+    const { id } = req.params; // Agora usando 'id' em vez de 'comunidadeId'
     const userId = req.session.user?.ID_USUARIO_T01;
 
     console.log(`Verificando moderador - ComunidadeID: ${id}, UserID: ${userId}`);
@@ -20,7 +20,7 @@ export const verificarModerador = async (req, res, next) => {
                  WHERE ID_COMUNIDADE_T14 = ? AND ID_USUARIO_T01 = ?) AS is_moderador
             FROM comunidade_t14 c
             WHERE c.ID_COMUNIDADE_T14 = ?
-        `, [id, userId, id]); // Alterado para usar id
+        `, [id, userId, id]);
 
         console.log('Resultado da query:', result);
 

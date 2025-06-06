@@ -329,3 +329,57 @@ export const getPostagensPorComunidade = (req, res) => {
             return res.status(500).json({ erro: 'Erro ao buscar postagens da comunidade' });
         });
 };
+
+export const deletarPostComunidade = async (req, res) => {
+    const { id, postId } = req.params; // Agora usando 'id' em vez de 'comunidadeId'
+    const userId = req.session.user?.ID_USUARIO_T01;
+
+    try {
+        // Verifica se o post pertence à comunidade
+        const [post] = await db.query(
+            'SELECT ID_USUARIO_T01, ID_COMUNIDADE_T14 FROM POST_T05 WHERE ID_POST_T05 = ?',
+            [postId]
+        );
+
+        if (post.length === 0) {
+            return res.status(404).json({ erro: 'Post não encontrado' });
+        }
+
+        if (post[0].ID_COMUNIDADE_T14 !== parseInt(id)) {
+            return res.status(400).json({ erro: 'Este post não pertence a esta comunidade' });
+        }
+
+        // Inicia transação
+        await db.query('START TRANSACTION');
+
+        try {
+            // Remove avaliações do post
+            await db.query(
+                'DELETE FROM AVALIACAO_T08 WHERE ID_POST_T05 = ?',
+                [postId]
+            );
+
+            // Remove comentários do post
+            await db.query(
+                'DELETE FROM COMENTARIO_T06 WHERE ID_POST_T05 = ?',
+                [postId]
+            );
+
+            // Remove o post
+            await db.query(
+                'DELETE FROM POST_T05 WHERE ID_POST_T05 = ?',
+                [postId]
+            );
+
+            await db.query('COMMIT');
+            
+            return res.status(200).json({ mensagem: 'Post excluído com sucesso' });
+        } catch (err) {
+            await db.query('ROLLBACK');
+            throw err;
+        }
+    } catch (err) {
+        console.error('Erro ao excluir post:', err);
+        return res.status(500).json({ erro: 'Erro interno ao excluir post' });
+    }
+};
