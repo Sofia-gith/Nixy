@@ -21,8 +21,59 @@
 
         <ul class="opcoes">
             <li><a href="/esqueciAsenha">Mudar senha</a></li>
-            <li><a href="/mudar-email">Mudar Nome</a></li>
+             <li><a href="#" id="btnMudarNome">Mudar Nome</a></li>
             <li><a href="/acessibilidade">Acessibilidade/Contraste</a></li>
+            <li><a href="/deleteUser">Excluir usuario</a></li>
+            <li><a href="/logout">Sair</a></li>
         </ul>
     </div>
+
+        <!-- Modal para mudar nome -->
+    <div id="modalMudarNome" class="modalUser">
+        <div class="modal-content-User">
+            <span class="close-User">&times;</span>
+            <h2>Alterar Nome</h2>
+            <form action="/mudarNome" method="POST" id="formMudarNome">
+                <div class="form-group-User">
+                    <label for="novoNome">Novo Nome:</label>
+                    <input type="text" id="novoNome" name="novoNome" value="<%= usuario.NOME_USUARIO_T01 %>" required>
+                </div>
+                <button type="submit" class="btn-salvar-User">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+     <script>
+        // Pegar o modal
+        const modal = document.getElementById("modalMudarNome");
+        
+        // Pegar o botão que abre o modal
+        const btn = document.getElementById("btnMudarNome");
+        
+        // Pegar o elemento <span> que fecha o modal
+        const span = document.getElementsByClassName("close")[0];
+        
+        // Quando o usuário clicar no botão, abre o modal
+        btn.onclick = function(e) {
+            e.preventDefault();
+            modal.style.display = "block";
+        }
+        
+        // Quando o usuário clicar no <span> (x), fecha o modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // Quando o usuário clicar em qualquer lugar fora do modal, fecha ele
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Opcional: Fechar o modal após enviar o formulário com sucesso
+        document.getElementById("formMudarNome").addEventListener("submit", function() {
+            modal.style.display = "none";
+        });
+    </script>
     </div>

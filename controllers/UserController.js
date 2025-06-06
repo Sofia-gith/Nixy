@@ -207,6 +207,49 @@ export const createUser = async (req, res) => {
     }
 };
 
+export const mudarNome = async (req, res) => {
+    try {
+        const { novoNome } = req.body;
+        const userId = req.session.user.ID_USUARIO_T01;
+
+        if (!novoNome || novoNome.trim() === '') {
+            return res.status(400).render('usuario', { 
+                usuario: req.session.user,
+                error: 'O nome não pode estar vazio'
+            });
+        }
+
+        // Atualiza no banco de dados
+        await db.query(
+            "UPDATE USUARIO_T01 SET NOME_USUARIO_T01 = ? WHERE ID_USUARIO_T01 = ?",
+            [novoNome, userId]
+        );
+
+        // Atualiza na sessão
+        req.session.user.NOME_USUARIO_T01 = novoNome;
+        await req.session.save();
+
+        // Recarrega os dados do usuário para garantir que tudo está atualizado
+        const [rows] = await db.query(
+            "SELECT * FROM USUARIO_T01 WHERE ID_USUARIO_T01 = ?", 
+            [userId]
+        );
+        
+        if (rows.length > 0) {
+            req.session.user = rows[0];
+            await req.session.save();
+        }
+
+        res.redirect('/usuario');
+    } catch (err) {
+        console.error("Erro ao atualizar nome:", err);
+        res.status(500).render('usuario', { 
+            usuario: req.session.user,
+            error: 'Erro ao atualizar nome'
+        });
+    }
+};
+
 export const updateUser = async (req, res) => {
     try {
         const { id, nome, email, senha } = req.body;
