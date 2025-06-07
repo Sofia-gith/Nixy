@@ -297,6 +297,77 @@ body {
   margin-bottom: 20px;
 }
 
+
+/* estatisticas */
+
+.time-dropdown-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.time-select {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  color: #555;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  outline: none;
+}
+.time-select:hover {
+  border-color: #a056e6;
+}
+
+
+.time-dropdown {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.time-dropdown select {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 0.8rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.time-dropdown select:focus {
+  outline: none;
+  border-color: #a056e6;
+}
+
+.valor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+canvas {
+  max-height: 150px;
+  width: 100% !important;
+  margin-top: 10px;
+}
+
+.valor {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.titulo {
+  font-size: 1rem;
+  color: #666;
+}
+
+
 .header h2.tituloMes {
   font-weight: 300;
   font-size: 22px;

@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import session from "express-session";
-import routes from "./routes/routes.js";
+import { default as routes } from "./routes/routes.js";
 import { db } from './db.js';
 import postagemRoutes from './routes/postagen.js';
 import anotacaoRoutes from './routes/anotacao.js';
@@ -180,21 +180,19 @@ app.post('/agenda/marcar-dia', async (req, res) => {
   }
 });
 
-
 app.get("/estatisticas", async (req, res) => {
   const user = req.session.user;
   if (!user) return res.redirect("/login");
 
   try {
-
     const [[{ totalSegundos }]] = await db.query(
       `SELECT COALESCE(SUM(SEGUNDOS_GASTOS), 0) AS totalSegundos
        FROM pomodoro_t01
        WHERE ID_USUARIO_T01 = ?`,
       [user.ID_USUARIO_T01]
     );
+    
     const progressoHoras = (totalSegundos / 3600).toFixed(1);
-
 
     const [diasEstudadosRows] = await db.query(
       `SELECT DATA_ESTUDO FROM dias_estudados_t01 WHERE ID_USUARIO_T01 = ?`,
@@ -211,7 +209,6 @@ app.get("/estatisticas", async (req, res) => {
       return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
     }).length;
 
-
     const diasEstudadosPorMes = Array(12).fill(0);
     diasEstudadosUsuario.forEach(data => {
       if (data.getFullYear() === anoAtual) {
@@ -219,14 +216,37 @@ app.get("/estatisticas", async (req, res) => {
       }
     });
 
+    // Nova consulta para obter posts por mês
+    const [postsPorMesRows] = await db.query(
+      `SELECT 
+         MONTH(DATA_CRIACAO_POST_T05) as mes,
+         COUNT(*) as total
+       FROM POST_T05
+       WHERE ID_USUARIO_T01 = ?
+         AND YEAR(DATA_CRIACAO_POST_T05) = YEAR(CURRENT_DATE)
+       GROUP BY MONTH(DATA_CRIACAO_POST_T05)`,
+      [user.ID_USUARIO_T01]
+    );
+
+    // Inicializa array com 12 meses (0 para meses sem posts)
+    const postsPorMes = Array(12).fill(0);
+    postsPorMesRows.forEach(row => {
+      postsPorMes[row.mes - 1] = row.total; // -1 porque meses são 1-12 e array é 0-11
+    });
+
+    // Total de posts (para mostrar no card)
+    const totalPosts = postsPorMes.reduce((sum, count) => sum + count, 0);
+
     res.render('estatisticas', {
       user,
       mostrarMenu: true,
       diasEstudados: diasEstudadosPorMes,
       diasEstudadosMesAtual,
       horasEstudadas: progressoHoras,
-      posts: 0,
+      posts: totalPosts,
       progressoHoras,
+      postsPorMes: JSON.stringify(postsPorMes),
+      totalSegundos: totalSegundos || 0
     });
 
   } catch (err) {
